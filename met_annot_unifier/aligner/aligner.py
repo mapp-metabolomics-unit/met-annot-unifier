@@ -1,5 +1,3 @@
-from pprint import pprint
-
 import pandas as pd
 
 from met_annot_unifier.aligner.parser import (
@@ -44,7 +42,7 @@ def align_data(gnps_file, sirius_file, isdb_file):
     gnps_data = standardize_column_names(gnps_data, "gnps_feature_id", "feature_id")
 
     # For debugging we pprint the dataframes
-    pprint(gnps_data)
+    # pprint(gnps_data)
 
     # Read and process Sirius data
     sirius_data = pd.read_csv(sirius_file, sep="\t")
@@ -58,7 +56,7 @@ def align_data(gnps_file, sirius_file, isdb_file):
     sirius_data = standardize_column_names(sirius_data, "sirius_feature_id", "feature_id")
 
     # For debugging we pprint the dataframes
-    pprint(sirius_data)
+    # pprint(sirius_data)
 
     # Read and process ISDB data
     isdb_data = pd.read_csv(isdb_file, sep="\t")
@@ -71,7 +69,7 @@ def align_data(gnps_file, sirius_file, isdb_file):
     isdb_data = standardize_column_names(isdb_data, "isdb_feature_id", "feature_id")
 
     # For debugging we pprint the dataframes
-    pprint(isdb_data)
+    # pprint(isdb_data)
 
     # Merge the dataframes on 'feature_id' and 'InChiKey' with an outer join
     combined_data = pd.concat([gnps_data, sirius_data, isdb_data], axis=0, ignore_index=True)
@@ -108,11 +106,3 @@ def align_data(gnps_file, sirius_file, isdb_file):
     ]
 
     return merged_data
-
-
-# gnps_file = '/Users/pma/Dropbox/git_repos/mapp-metabolomics-unit/met-annot-unifier/tests/data/gnps_output_example.tsv'
-# sirius_file = '/Users/pma/Dropbox/git_repos/mapp-metabolomics-unit/met-annot-unifier/tests/data/sirius_output_example.tsv'
-# isdb_file = '/Users/pma/Dropbox/git_repos/mapp-metabolomics-unit/met-annot-unifier/tests/data/isdb_output_example.tsv'
-
-
-# df_aligned = align_data(gnps_file, sirius_file, isdb_file)
