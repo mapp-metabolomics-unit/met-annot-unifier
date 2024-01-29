@@ -1,28 +1,30 @@
+from typing import Optional
+
 import pandas as pd
 
 
-def parse_gnps(file_path):
+def parse_gnps(file_path: str) -> pd.DataFrame:
     # Read the GNPS output file
     data = pd.read_csv(file_path, sep="\t")
     # Extract necessary columns and any other processing
     return data
 
 
-def parse_sirius(file_path):
+def parse_sirius(file_path: str) -> pd.DataFrame:
     # Read the Sirius output file
     data = pd.read_csv(file_path, sep="\t")
     # Extract necessary columns and any other processing
     return data
 
 
-def parse_isdb(file_path):
+def parse_isdb(file_path: str) -> pd.DataFrame:
     # Read the ISDB output file
     data = pd.read_csv(file_path, sep="\t")
     # Extract necessary columns and any other processing
     return data
 
 
-def standardize_column_names(df, original_column_name, final_column_name):
+def standardize_column_names(df: pd.DataFrame, original_column_name: str, final_column_name: str) -> pd.DataFrame:
     """
     Standardizes the column names of a dataframe.
 
@@ -44,7 +46,7 @@ def standardize_column_names(df, original_column_name, final_column_name):
     return standardized_df
 
 
-def extract_feature_id(df, feature_id_column):
+def extract_feature_id(df: pd.DataFrame, feature_id_column: str) -> pd.DataFrame:
     """
     Extracts the numeric feature ID from a string in the specified column of a dataframe.
 
@@ -64,7 +66,7 @@ def extract_feature_id(df, feature_id_column):
     Name: FeatureID, dtype: int64
     """
 
-    def extract_id(feature_string):
+    def extract_id(feature_string: Optional[str]) -> Optional[int]:
         if isinstance(feature_string, str):
             # Split the string by '_' and extract the last part, then convert to integer
             return int(feature_string.split("_")[-1])
@@ -77,7 +79,7 @@ def extract_feature_id(df, feature_id_column):
     return df
 
 
-def prefix_columns(df, prefix, exclude_columns=None):
+def prefix_columns(df: pd.DataFrame, prefix: str, exclude_columns: Optional[list] = None) -> pd.DataFrame:
     """
     Prefixes all columns in a dataframe with the specified prefix, excluding specified columns.
 
@@ -104,7 +106,7 @@ def prefix_columns(df, prefix, exclude_columns=None):
     return df
 
 
-def add_source_column(df, source_name):
+def add_source_column(df: pd.DataFrame, source_name: str) -> pd.DataFrame:
     """
     Adds a 'Source' column to a dataframe, labeling all rows with the specified source name.
 

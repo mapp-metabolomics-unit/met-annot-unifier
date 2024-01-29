@@ -24,6 +24,8 @@ mypy = "^1.5.1"
 pre-commit = "^3.4.0"
 tox = "^4.11.1"
 ipykernel = "^6.29.0"
+pandas-stubs = "^2.1.4.231227"
+pydantic = "^2.6.0"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.4.2"

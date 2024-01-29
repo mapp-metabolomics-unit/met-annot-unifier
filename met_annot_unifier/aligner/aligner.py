@@ -8,7 +8,7 @@ from met_annot_unifier.aligner.parser import (
 )
 
 
-def align_data(gnps_file, sirius_file, isdb_file):
+def align_data(gnps_file: str, sirius_file: str, isdb_file: str) -> pd.DataFrame:
     """
     Aligns and merges data from GNPS, Sirius, and ISDB datasets. The function standardizes
     column names, prefixes them to indicate their source, merges the data based on 'feature_id'
