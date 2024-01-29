@@ -27,11 +27,12 @@ ipykernel = "^6.29.0"
 pandas-stubs = "^2.1.4.231227"
 pydantic = "^2.6.0"
 pytest-click = "^1.1.0"
+mkdocstrings = "^0.24.0"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.4.2"
 mkdocs-material = "^9.2.7"
-mkdocstrings = {extras = ["python"], version = "^0.23.0"}
+mkdocstrings = {extras = ["python"], version = "^0.24.0"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

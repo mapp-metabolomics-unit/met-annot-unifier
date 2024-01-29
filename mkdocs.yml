@@ -2,10 +2,10 @@ site_name: met-annot-unifier
 repo_url: https://github.com/mapp-metabolomics-unit/met-annot-unifier
 site_url: https://mapp-metabolomics-unit.github.io/met-annot-unifier
 site_description: A Python project to combine tabular outputs from GNPS, Sirius and ISDB
-site_author: Pierre-Marei Allard
+site_author: Pierre-Marie Allard
 edit_uri: edit/main/docs/
 repo_name: mapp-metabolomics-unit/met-annot-unifier
-copyright: Maintained by <a href="https://mapp-metabolomics-unit.com">Florian</a>.
+copyright: Maintained by <a href="https://mapp-metabolomics-unit.com"></a>.
 
 nav:
   - Home: index.md
@@ -18,6 +18,7 @@ plugins:
           setup_commands:
             - import sys
             - sys.path.append('../')
+
 theme:
   name: material
   feature:

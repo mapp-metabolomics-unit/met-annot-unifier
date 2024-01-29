@@ -11,12 +11,16 @@ from met_annot_unifier.aligner.aligner import align_data
 @click.option("--isdb-file", type=click.Path(exists=True), help="Path to ISDB output file.")
 @click.option("--output", "-o", type=click.Path(), help="Output file to save the merged data.")
 def main(gnps_file: str, sirius_file: str, isdb_file: str, output: Optional[str] = None) -> None:
-    """
-    CLI tool to align and merge data from GNPS, Sirius, and ISDB.
+    """CLI tool to align and merge data from GNPS, Sirius, and ISDB.
 
-    GNPS_FILE: File path for the GNPS data.
-    SIRIUS_FILE: File path for the Sirius data.
-    ISDB_FILE: File path for the ISDB data.
+    Args:
+        gnps_file (str): Path to GNPS output file.
+        sirius_file (str): Path to Sirius output file.
+        isdb_file (str): Path to ISDB output file.
+        output (str, optional): Output file to save the merged data. Defaults to None.
+
+    Returns:
+        A dataframe with the aligned data (if the output option is used, the dataframe is saved to a file)
     """
     aligned_data = align_data(gnps_file, sirius_file, isdb_file)
 
