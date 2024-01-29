@@ -2,7 +2,7 @@
 name = "met_annot_unifier"
 version = "0.0.1"
 description = "A Python project to combine tabular outputs from GNPS, Sirius and ISDB"
-authors = ["Pierre-Marie Allard <fpierre-marie.allard@unifr.ch>"]
+authors = ["Pierre-Marie Allard <pierre-marie.allard@unifr.ch>"]
 repository = "https://github.com/mapp-metabolomics-unit/met-annot-unifier"
 documentation = "https://mapp-metabolomics-unit.github.io/met-annot-unifier/"
 readme = "README.md"
