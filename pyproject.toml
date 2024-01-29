@@ -14,6 +14,7 @@ packages = [
 python = ">=3.9,<4.0"
 click = "^8.1.7"
 pandas = "^2.2.0"
+pyarrow = "^15.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.0"
@@ -25,6 +26,7 @@ tox = "^4.11.1"
 ipykernel = "^6.29.0"
 pandas-stubs = "^2.1.4.231227"
 pydantic = "^2.6.0"
+pytest-click = "^1.1.0"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.4.2"
@@ -108,3 +110,8 @@ source = ["met_annot_unifier"]
 [tool.poetry.scripts]
 met_annot_unifier = "met_annot_unifier.__main__:main"
 met-annot-unifier-cli = 'met_annot_unifier.cli:main'
+
+# We delinberately ignore the following dependencies
+
+[tool.deptry.per_rule_ignores]
+DEP002 = ["pyarrow"]
