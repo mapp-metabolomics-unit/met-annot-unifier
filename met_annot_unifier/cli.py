@@ -1,14 +1,30 @@
+from typing import Optional
+
 import click
+
+from met_annot_unifier.aligner.aligner import align_data
 
 
 @click.command()
 @click.option("--gnps-file", type=click.Path(exists=True), help="Path to GNPS output file.")
 @click.option("--sirius-file", type=click.Path(exists=True), help="Path to Sirius output file.")
 @click.option("--isdb-file", type=click.Path(exists=True), help="Path to ISDB output file.")
-def main(gnps_file: str, sirius_file: str, isdb_file: str) -> None:
-    """CLI tool to align metabolite annotations from GNPS, Sirius, and ISDB."""
-    click.echo("Aligning metabolite annotations...")
-    # Call the function to handle the alignment logic
+@click.option("--output", "-o", type=click.Path(), help="Output file to save the merged data.")
+def main(gnps_file: str, sirius_file: str, isdb_file: str, output: Optional[str] = None) -> None:
+    """
+    CLI tool to align and merge data from GNPS, Sirius, and ISDB.
+
+    GNPS_FILE: File path for the GNPS data.
+    SIRIUS_FILE: File path for the Sirius data.
+    ISDB_FILE: File path for the ISDB data.
+    """
+    aligned_data = align_data(gnps_file, sirius_file, isdb_file)
+
+    if output:
+        aligned_data.to_csv(output, index=False)
+        click.echo(f"Aligned data saved to {output}")
+    else:
+        click.echo(aligned_data)
 
 
 if __name__ == "__main__":
