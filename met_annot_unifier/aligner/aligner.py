@@ -8,10 +8,10 @@ from met_annot_unifier.aligner.parser import (
 )
 
 
-def align_data(gnps_file: str, sirius_file: str, isdb_file: str) -> pd.DataFrame:
+def align_data_vertically(gnps_file: str, sirius_file: str, isdb_file: str) -> pd.DataFrame:
     """
-    Aligns and merges data from GNPS, Sirius, and ISDB datasets. The function standardizes
-    column names, prefixes them to indicate their source, merges the data based on 'feature_id'
+    Aligns and merges data from GNPS, Sirius, and ISDB datasets. This is done vertically, in other words, we keep go from a wide to long format.
+    The function standardizes column names, prefixes them to indicate their source, merges the data based on 'feature_id'
     and 'IK2D', and then creates consolidated 'Sources' and 'SMILES' columns.
 
     Args:

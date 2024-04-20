@@ -3,7 +3,7 @@ import tempfile
 
 import pandas as pd
 
-from met_annot_unifier.aligner.aligner import align_data
+from met_annot_unifier.aligner.aligner import align_data_vertically
 
 
 def test_align_data():
@@ -28,7 +28,7 @@ def test_align_data():
         # pprint(isdb_mock)
 
         # Call the align_data function
-        merged_data = align_data(tf_gnps.name, tf_sirius.name, tf_isdb.name)
+        merged_data = align_data_vertically(tf_gnps.name, tf_sirius.name, tf_isdb.name)
 
     # Assertions
     assert "feature_id" in merged_data.columns

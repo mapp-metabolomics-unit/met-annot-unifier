@@ -1,7 +1,7 @@
 import pytest
 from click.testing import CliRunner
 
-from met_annot_unifier.cli import main  # Replace with your actual import
+from met_annot_unifier.cli import cli  # Replace with your actual import
 
 
 def test_cli_full():
@@ -9,8 +9,9 @@ def test_cli_full():
 
     # Test with valid arguments
     result = runner.invoke(
-        main,
+        cli,
         [
+            "align-vertically",
             "--gnps-file",
             "tests/data/gnps_output_example_sub.tsv",
             "--sirius-file",
@@ -21,6 +22,7 @@ def test_cli_full():
             "tests/data/output_sub.tsv",
         ],
     )
+    print(result.output)
 
     # Check if the CLI ran successfully (exit code 0)
     assert result.exit_code == 0
@@ -29,8 +31,9 @@ def test_cli_full():
 
     # Test handling of invalid arguments or files
     result_invalid = runner.invoke(
-        main,
+        cli,
         [
+            "align-vertically",
             "--gnps-file",
             "nonexistent_file.tsv",
             "--sirius-file",
