@@ -2,7 +2,7 @@ from typing import Optional
 
 import click
 
-from met_annot_unifier.aligner.aligner import align_data_vertically
+from met_annot_unifier.aligner.aligner import align_data_horizontally, align_data_vertically
 
 
 @click.group()
@@ -38,26 +38,30 @@ def align_vertically(gnps_file: str, sirius_file: str, isdb_file: str, output: O
         click.echo(aligned_data)
 
 
-# @cli.command()
-# @click.option("--gnps-file", type=click.Path(exists=True), help="Path to GNPS output file.")
-# @click.option("--output", "-o", type=click.Path(), help="Output file to save the merged data.")
-# def parse_gnps(gnps_file: str, output: Optional[str] = None) -> None:
-#     """CLI tool to parse GNPS data.
+@cli.command()
+@click.option("--gnps-file", type=click.Path(exists=True), help="Path to GNPS output file.")
+@click.option("--sirius-file", type=click.Path(exists=True), help="Path to Sirius output file.")
+@click.option("--isdb-file", type=click.Path(exists=True), help="Path to ISDB output file.")
+@click.option("--output", "-o", type=click.Path(), help="Output file to save the merged data.")
+def align_horizontally(gnps_file: str, sirius_file: str, isdb_file: str, output: Optional[str] = None) -> None:
+    """CLI tool to align and merge data from GNPS, Sirius, and ISDB horizontally.
 
-#     Args:
-#         gnps_file (str): Path to GNPS output file.
-#         output (str, optional): Output file to save the merged data. Defaults to None.
+    Args:
+        gnps_file (str): Path to GNPS output file.
+        sirius_file (str): Path to Sirius output file.
+        isdb_file (str): Path to ISDB output file.
+        output (str, optional): Output file to save the merged data. Defaults to None.
 
-#     Returns:
-#         A dataframe with the aligned data (if the output option is used, the dataframe is saved to a file)
-#     """
-#     parsed_data = parse_gnps(gnps_file)
+    Returns:
+        A dataframe with the aligned data (if the output option is used, the dataframe is saved to a file)
+    """
+    aligned_data = align_data_horizontally(gnps_file, sirius_file, isdb_file)
 
-#     if output:
-#         parsed_data.to_csv(parsed_data, index=False)
-#         click.echo(f"Aligned data saved to {parsed_data}")
-#     else:
-#         click.echo(parsed_data)
+    if output:
+        aligned_data.to_csv(output, index=False)
+        click.echo(f"Aligned data saved to {output}")
+    else:
+        click.echo(aligned_data)
 
 
 if __name__ == "__main__":

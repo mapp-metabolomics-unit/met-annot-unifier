@@ -119,3 +119,97 @@ def add_source_column(df: pd.DataFrame, source_name: str) -> pd.DataFrame:
     """
     df["Source"] = source_name
     return df
+
+
+def process_gnps_data(gnps_file: str) -> pd.DataFrame:
+    """
+    Reads and processes GNPS data. This function standardizes column names, prefixes them to indicate their source,
+    and extracts 'feature_id' and 'IK2D' from the data.
+
+    Args:
+    gnps_file (str): File path for the GNPS data in TSV format.
+
+    Returns:
+    pandas.DataFrame: A DataFrame with processed GNPS data.
+
+    Example:
+    >>> gnps_file = 'path/to/gnps_data.tsv'
+    >>> gnps_data = process_gnps_data(gnps_file)
+    >>> print(gnps_data.columns)
+    Index(['feature_id', 'IK2D', ...], dtype='object')
+    """
+
+    # Read and process GNPS data
+    gnps_data = pd.read_csv(gnps_file, sep="\t")
+    gnps_data = add_source_column(gnps_data, "GNPS")
+    gnps_data = standardize_column_names(gnps_data, "InChIKey-Planar", "IK2D")
+    gnps_data = standardize_column_names(gnps_data, "#Scan#", "feature_id")
+    gnps_data = standardize_column_names(gnps_data, "Smiles", "SMILES")
+    gnps_data = prefix_columns(gnps_data, "gnps_", exclude_columns=[])
+    gnps_data = standardize_column_names(gnps_data, "gnps_IK2D", "IK2D")
+    gnps_data = standardize_column_names(gnps_data, "gnps_feature_id", "feature_id")
+
+    return gnps_data
+
+
+def process_sirius_data(sirius_file: str) -> pd.DataFrame:
+    """
+    Reads and processes Sirius data. This function standardizes column names, prefixes them to indicate their source,
+    and extracts 'feature_id' and 'IK2D' from the data.
+
+    Args:
+    sirius_file (str): File path for the Sirius data in TSV format.
+
+    Returns:
+    pandas.DataFrame: A DataFrame with processed Sirius data.
+
+    Example:
+    >>> sirius_file = 'path/to/sirius_data.tsv'
+    >>> sirius_data = process_sirius_data(sirius_file)
+    >>> print(sirius_data.columns)
+    Index(['feature_id', 'IK2D', ...], dtype='object')
+    """
+
+    # Read and process Sirius data
+    sirius_data = pd.read_csv(sirius_file, sep="\t")
+    sirius_data = add_source_column(sirius_data, "SIRIUS")
+    sirius_data = standardize_column_names(sirius_data, "InChIkey2D", "IK2D")
+    sirius_data = standardize_column_names(sirius_data, "id", "feature_id")
+    sirius_data = standardize_column_names(sirius_data, "smiles", "SMILES")
+    sirius_data = prefix_columns(sirius_data, "sirius_", exclude_columns=[])
+    sirius_data = extract_feature_id(sirius_data, "sirius_feature_id")
+    sirius_data = standardize_column_names(sirius_data, "sirius_IK2D", "IK2D")
+    sirius_data = standardize_column_names(sirius_data, "sirius_feature_id", "feature_id")
+
+    return sirius_data
+
+
+def process_isdb_data(isdb_file: str) -> pd.DataFrame:
+    """
+    Reads and processes ISDB data. This function standardizes column names, prefixes them to indicate their source,
+    and extracts 'feature_id' and 'IK2D' from the data.
+
+    Args:
+    isdb_file (str): File path for the ISDB data in TSV format.
+
+    Returns:
+    pandas.DataFrame: A DataFrame with processed ISDB data.
+
+    Example:
+    >>> isdb_file = 'path/to/isdb_data.tsv'
+    >>> isdb_data = process_isdb_data(isdb_file)
+    >>> print(isdb_data.columns)
+    Index(['feature_id', 'IK2D', ...], dtype='object')
+    """
+
+    # Read and process ISDB data
+    isdb_data = pd.read_csv(isdb_file, sep="\t")
+    isdb_data = add_source_column(isdb_data, "ISDB")
+    isdb_data = standardize_column_names(isdb_data, "short_inchikey", "IK2D")
+    isdb_data = standardize_column_names(isdb_data, "feature_id", "feature_id")
+    isdb_data = standardize_column_names(isdb_data, "structure_smiles", "SMILES")
+    isdb_data = prefix_columns(isdb_data, "isdb_", exclude_columns=[])
+    isdb_data = standardize_column_names(isdb_data, "isdb_IK2D", "IK2D")
+    isdb_data = standardize_column_names(isdb_data, "isdb_feature_id", "feature_id")
+
+    return isdb_data
