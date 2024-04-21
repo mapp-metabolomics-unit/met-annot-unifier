@@ -73,6 +73,10 @@ def align_data_vertically(gnps_file: str, sirius_file: str, isdb_file: str) -> p
         axis=1,
     )
 
+    # The tools_Source columns are no longer needed. They are dropped.
+
+    merged_data.drop(columns=["gnps_Source", "isdb_Source", "sirius_Source"], inplace=True)
+
     # Create a SMILES column by choosing form the sirius_SMILES, isdb_SMILES, and gnps_smiles columns with this order of preference (sirius, isdb, gnps)
 
     merged_data["SMILES"] = merged_data.apply(
