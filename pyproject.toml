@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "met-annot-unifier"
-version = "0.0.2"
+version = "0.0.3a0"
 description = "A Python project to combine tabular outputs from GNPS, Sirius and ISDB"
 authors = ["Pierre-Marie Allard <pierre-marie.allard@unifr.ch>"]
 repository = "https://github.com/mapp-metabolomics-unit/met-annot-unifier"
@@ -113,7 +113,7 @@ source = ["met_annot_unifier"]
 
 [tool.poetry.scripts]
 met_annot_unifier = "met_annot_unifier.__main__:main"
-met-annot-unifier-cli = 'met_annot_unifier.cli:main'
+met-annot-unifier-cli = 'met_annot_unifier.cli:cli'
 
 # We delinberately ignore the following dependencies
 

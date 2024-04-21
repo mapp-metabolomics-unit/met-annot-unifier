@@ -26,13 +26,13 @@ pip install met-annot-unifier
 For now the package is only available as a command line tool. You can run it with the following command:
 
 ```bash
-python -m met_annot_unifier.cli
+met-annot-unifier-cli
 ```
 
 Get help on the available modes with:
 
 ```bash
-python -m met_annot_unifier.cli --help
+met-annot-unifier-cli --help
 ```
 
 #### Align tables
@@ -42,13 +42,13 @@ You can align the annotations tables from GNPS, Sirius and ISDB using two modes:
 - `align-horizontally`: This will return a long table with a single row for each unique compound (according to their planar structures or IK2D). This mode can be useful to output a table to be viewed in [Datawarrior](https://openmolecules.org/datawarrior/) or similar tools for chemical structures exploration.
 
 ```bash
-python -m met_annot_unifier.cli align-horizontally --gnps-file <path-to-gnps-table> --sirius-file <path-to-sirius-table> --isdb-file <path-to-isdb-table> --output <output-path>
+met-annot-unifier-cli align-horizontally --gnps-file <path-to-gnps-table> --sirius-file <path-to-sirius-table> --isdb-file <path-to-isdb-table> --output <output-path>
 ```
 
 - `align-vertically`: This will return a wide table with a single row per feature (m/z and retention time) and columns for each of the three sources. This mode can be useful to output a table to be added to a molecular network to be visualized in [Cytoscape](https://cytoscape.org/) or similar tools for network visualization.
 
 ```bash
-python -m met_annot_unifier.cli align-vertically --gnps-file <path-to-gnps-table> --sirius-file <path-to-sirius-table> --isdb-file <path-to-isdb-table> --output <output-path>
+met-annot-unifier-cli align-vertically --gnps-file <path-to-gnps-table> --sirius-file <path-to-sirius-table> --isdb-file <path-to-isdb-table> --output <output-path>
 ```
 
 #### Pruning tables
@@ -56,7 +56,7 @@ python -m met_annot_unifier.cli align-vertically --gnps-file <path-to-gnps-table
 You can prune the aligned tables to remove rows with missing values in the columns of interest. This can be useful to remove rows with missing values in the columns used to merge the tables.
 
 ```bash
-python -m met_annot_unifier.cli prune-table --input <path-to-aligned-table> --list-columns <key-in-config-file> --output <output-path>
+met-annot-unifier-cli prune-table --input <path-to-aligned-table> --list-columns <key-in-config-file> --output <output-path>
 ```
 
 The `--list-columns` argument should be a key in the `column_config.yaml` file that contains a list of columns to be used to prune the table. You can edit this file [here](https://mapp-metabolomics-unit.github.io/met-annot-unifier/config/column_config.yaml).
@@ -66,15 +66,15 @@ The `--list-columns` argument should be a key in the `column_config.yaml` file t
 You can align the GNPS, ISDB and Sirius tables found in the `examples/data/in` folder of this repository and prune them to have a Cytoscape compatible table with the following commands:
 
 ```bash
-python -m met_annot_unifier.cli align-horizontally --gnps-file examples/data/in/gnps_output_example.tsv --sirius-file examples/data/in/sirius_output_example.tsv --isdb-file examples/data/in/isdb_output_example.tsv --output examples/data/out/aligned_table_horizontally.tsv
-python -m met_annot_unifier.cli prune-table --input-file examples/data/out/aligned_table_horizontally.tsv --list-columns "minimal_cytoscape" -o examples/data/out/aligned_table_horizontally_pruned_cytoscape.tsv
+met-annot-unifier-cli align-horizontally --gnps-file examples/data/in/gnps_output_example.tsv --sirius-file examples/data/in/sirius_output_example.tsv --isdb-file examples/data/in/isdb_output_example.tsv --output examples/data/out/aligned_table_horizontally.tsv
+met-annot-unifier-cli prune-table --input-file examples/data/out/aligned_table_horizontally.tsv --list-columns "minimal_cytoscape" -o examples/data/out/aligned_table_horizontally_pruned_cytoscape.tsv
 ```
 
 Since the input file arguments are optional, you can also choose to treat only ISDB and Sirius tables for example.
 
 ````bash
-python -m met_annot_unifier.cli align-horizontally --sirius-file examples/data/in/sirius_output_example.tsv --isdb-file examples/data/in/isdb_output_example.tsv --output examples/data/out/aligned_table_horizontally_isdb_sirius.tsv
-python -m met_annot_unifier.cli prune-table --input-file examples/data/out/aligned_table_horizontally_isdb_sirius.tsv --list-columns "minimal_cytoscape_no_gnps" -o examples/data/out/aligned_table_horizontally_pruned_isdb_sirius_cytoscape.tsv
+met-annot-unifier-cli align-horizontally --sirius-file examples/data/in/sirius_output_example.tsv --isdb-file examples/data/in/isdb_output_example.tsv --output examples/data/out/aligned_table_horizontally_isdb_sirius.tsv
+met-annot-unifier-cli prune-table --input-file examples/data/out/aligned_table_horizontally_isdb_sirius.tsv --list-columns "minimal_cytoscape_no_gnps" -o examples/data/out/aligned_table_horizontally_pruned_isdb_sirius_cytoscape.tsv
 ```
 
 ---
