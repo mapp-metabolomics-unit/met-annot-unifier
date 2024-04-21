@@ -67,9 +67,9 @@ def align_data_vertically(gnps_file: str, sirius_file: str, isdb_file: str) -> p
         lambda x: ", ".join(x.dropna().astype(str).unique())
     )
 
-    # Create the 'Sources' column by concatenating sirius_Source, isdb_Source, and gnps_Source
+    # Create the 'Sources' column by concatenating gnps_Source, isdb_Source, and sirius_Source
     merged_data["Sources"] = merged_data.apply(
-        lambda row: ", ".join(filter(None, [row.get("sirius_Source"), row.get("isdb_Source"), row.get("gnps_Source")])),
+        lambda row: "|".join(filter(None, [row.get("gnps_Source"), row.get("isdb_Source"), row.get("sirius_Source")])),
         axis=1,
     )
 

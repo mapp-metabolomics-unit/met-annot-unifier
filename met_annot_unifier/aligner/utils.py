@@ -16,12 +16,12 @@ def determine_source(row: pd.Series) -> str:
     if row["sirius_IK2D"] == row["isdb_IK2D"]:
         sources.append("ISDB")
         sources.append("SIRIUS")
-    return ",".join(sorted(set(sources)))
+    return "|".join(sorted(set(sources)))
 
 
 # Function to count the sources
 def count_sources(source_str: str) -> int:
     if source_str:
-        # Count unique source names (they are comma-separated)
-        return len(set(source_str.split(",")))
+        # Count unique source names (they are | separated)
+        return len(set(source_str.split("|")))
     return 0

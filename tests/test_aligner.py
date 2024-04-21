@@ -38,7 +38,7 @@ def test_align_data_vertically():
     assert len(merged_data) == 3  # Expecting 3 merged rows
 
     # Check if 'Sources' column is correctly populated
-    for source in ["SIRIUS, GNPS", "ISDB, GNPS", "SIRIUS, ISDB"]:
+    for source in ["GNPS|SIRIUS", "GNPS|ISDB", "ISDB|SIRIUS"]:
         assert source in merged_data["Sources"].values
 
     # Clean up: Remove temporary files
@@ -89,7 +89,7 @@ def test_align_data_horizontally():
     assert len(merged_data) == 4  # Expecting 3 merged rows
 
     # Check if 'Sources' column is correctly populated
-    for source in ["GNPS,SIRIUS", "GNPS,ISDB", "ISDB,SIRIUS", ""]:
+    for source in ["GNPS|SIRIUS", "GNPS|ISDB", "ISDB|SIRIUS", ""]:
         assert source in merged_data["source"].values
 
     # Clean up: Remove temporary files
