@@ -73,9 +73,8 @@ def align_horizontally(gnps_file: str, sirius_file: str, isdb_file: str, output:
 @click.option("--remove", is_flag=True, help="Removes the specified columns instead of keeping them.")
 @click.option(
     "--list-columns",
-    type=click.Choice(["gnps", "sirius", "isdb", "test", "minimal_datawarrior", "minimal_cytoscape"]),
-    multiple=True,
-    help="List of columns to remove, can select multiple separated by spaces.",
+    required=True,
+    help="Key in the JSON configuration for the list of columns to be processed.",
 )
 @click.option("--output", "-o", type=click.Path(), help="Output file to save the pruned data.")
 def prune_table(input_file: str, list_columns: str, remove: bool, output: Optional[str] = None) -> None:
@@ -90,27 +89,25 @@ def prune_table(input_file: str, list_columns: str, remove: bool, output: Option
     Returns:
         A dataframe with the pruned data (if the output option is used, the dataframe is saved to a file)
     """
-    # Define the columns to remove
+
+    # Load the configuration file
     columns_to_remove = load_configuration("column_config.json")
+
+    # Get the columns to process
+    columns_to_process = columns_to_remove[list_columns]
+
     # Load the input file
     df = pd.read_csv(input_file, sep="\t")
 
-    # Aggregate all columns to remove from selected lists
-    all_columns_to_remove = []
-    for list_name in list_columns:  # list_columns is a tuple of selections
-        all_columns_to_remove.extend(columns_to_remove[list_name])
-
-    # # Remove duplicates in the list
-    # all_columns_to_remove = list(set(all_columns_to_remove))
-
     # Prune the table
-    pruned_data = table_pruner(df, all_columns_to_remove, remove=remove)
+    pruned_data = table_pruner(df, columns_to_process, remove=remove)
 
+    # Save or print the result
     if output:
         pruned_data.to_csv(output, index=False, sep="\t")
         click.echo(f"Pruned data saved to {output}")
     else:
-        click.echo(pruned_data)
+        click.echo(pruned_data.to_string())
 
 
 if __name__ == "__main__":

@@ -7,27 +7,20 @@ import pandas as pd
 
 
 def determine_source(row: pd.Series) -> str:
-    sources = []
-    # Check if all are equal
-    if row["gnps_IK2D"] == row["sirius_IK2D"] == row["isdb_IK2D"]:
-        return "GNPS,ISDB,SIRIUS"
-    if row["gnps_IK2D"] == row["sirius_IK2D"]:
-        sources.append("GNPS")
-        sources.append("SIRIUS")
-    if row["gnps_IK2D"] == row["isdb_IK2D"]:
-        sources.append("GNPS")
-        sources.append("ISDB")
-    if row["sirius_IK2D"] == row["isdb_IK2D"]:
-        sources.append("ISDB")
-        sources.append("SIRIUS")
-        # Check individual sources
-    if "GNPS" not in sources and pd.notna(row["gnps_IK2D"]):
-        sources.append("GNPS")
-    if "SIRIUS" not in sources and pd.notna(row["sirius_IK2D"]):
-        sources.append("SIRIUS")
-    if "ISDB" not in sources and pd.notna(row["isdb_IK2D"]):
-        sources.append("ISDB")
-    return "|".join(sorted(set(sources)))
+    # Filter columns that are related to IK2D data and exist in the row
+    ik2d_columns = [col for col in row.index if "IK2D" in col and pd.notna(row[col])]
+
+    # Map columns to sources by extracting the prefix before '_IK2D'
+    sources = {col.split("_")[0] for col in ik2d_columns}
+
+    # Check if any of the values are the same across different sources, consolidate them
+    unique_ik2ds = {row[col] for col in ik2d_columns}
+    if len(unique_ik2ds) == 1:
+        # All values are the same, include all sources
+        return "|".join(sorted(sources))
+
+    # Return sources as sorted string joined by '|'
+    return "|".join(sorted(sources))
 
 
 # Function to count the sources

@@ -7,3 +7,11 @@ class DataFileError(ValueError):
     ) -> None:
         self.message = message
         super().__init__(self.message)
+
+
+class ConfigKeyError(KeyError):
+    """Exception raised when the specified key is not found in the configuration file."""
+
+    def __init__(self, key: str):
+        message = f"Error: '{key}' is not a valid key in the configuration."
+        super().__init__(message)

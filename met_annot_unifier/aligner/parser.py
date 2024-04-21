@@ -141,7 +141,7 @@ def process_gnps_data(gnps_file: str) -> pd.DataFrame:
 
     # Read and process GNPS data
     gnps_data = pd.read_csv(gnps_file, sep="\t")
-    gnps_data = add_source_column(gnps_data, "GNPS")
+    gnps_data = add_source_column(gnps_data, "gnps")
     gnps_data = standardize_column_names(gnps_data, "InChIKey-Planar", "IK2D")
     gnps_data = standardize_column_names(gnps_data, "#Scan#", "feature_id")
     gnps_data = standardize_column_names(gnps_data, "Smiles", "SMILES")
@@ -172,7 +172,7 @@ def process_sirius_data(sirius_file: str) -> pd.DataFrame:
 
     # Read and process Sirius data
     sirius_data = pd.read_csv(sirius_file, sep="\t")
-    sirius_data = add_source_column(sirius_data, "SIRIUS")
+    sirius_data = add_source_column(sirius_data, "sirius")
     sirius_data = standardize_column_names(sirius_data, "InChIkey2D", "IK2D")
     sirius_data = standardize_column_names(sirius_data, "id", "feature_id")
     sirius_data = standardize_column_names(sirius_data, "smiles", "SMILES")
@@ -204,7 +204,7 @@ def process_isdb_data(isdb_file: str) -> pd.DataFrame:
 
     # Read and process ISDB data
     isdb_data = pd.read_csv(isdb_file, sep="\t")
-    isdb_data = add_source_column(isdb_data, "ISDB")
+    isdb_data = add_source_column(isdb_data, "isdb")
     isdb_data = standardize_column_names(isdb_data, "short_inchikey", "IK2D")
     isdb_data = standardize_column_names(isdb_data, "feature_id", "feature_id")
     isdb_data = standardize_column_names(isdb_data, "structure_smiles", "SMILES")

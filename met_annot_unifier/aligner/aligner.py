@@ -84,67 +84,59 @@ def align_data_vertically(
     return merged_data
 
 
-def align_data_horizontally(gnps_file: str, sirius_file: str, isdb_file: str) -> pd.DataFrame:
+def align_data_horizontally(
+    gnps_file: Optional[str] = None, sirius_file: Optional[str] = None, isdb_file: Optional[str] = None
+) -> pd.DataFrame:
     """
-    Aligns and merges data from GNPS, Sirius, and ISDB datasets. This is done horizontally, in other words, we keep the data in a wide format.
-    The function standardizes column names, prefixes them to indicate their source, merges the data based on 'feature_id'.
+    Aligns and merges data from GNPS, Sirius, and ISDB datasets, if provided. This function merges the data horizontally,
+    keeping the data in a wide format. The function standardizes column names, prefixes them to indicate their source,
+    and merges the data based on 'feature_id'.
 
     Args:
-    gnps_file (str): File path for the GNPS data in TSV format.
-    sirius_file (str): File path for the Sirius data in TSV format.
-    isdb_file (str): File path for the ISDB data in TSV format.
+    gnps_file (Optional[str]): File path for the GNPS data in TSV format.
+    sirius_file (Optional[str]): File path for the Sirius data in TSV format.
+    isdb_file (Optional[str]): File path for the ISDB data in TSV format.
 
     Returns:
-    pandas.DataFrame: A DataFrame with aligned and merged data from GNPS, Sirius, and ISDB.
-
-    Example:
-    >>> gnps_file = 'path/to/gnps_data.tsv'
-    >>> sirius_file = 'path/to/sirius_data.tsv'
-    >>> isdb_file = 'path/to/isdb_data.tsv'
-    >>> aligned_data = align_data(gnps_file, sirius_file, isdb_file)
-    >>> print(aligned_data.columns)
-    Index(['feature_id', 'IK2D', 'gnps_Source', 'gnps_SMILES', 'sirius_Source', ...], dtype='object')
+    pd.DataFrame: A DataFrame with aligned and merged data from the provided sources.
     """
 
-    # Read and process GNPS data
-    gnps_data = pd.read_csv(gnps_file, sep="\t")
-    gnps_data = standardize_column_names(gnps_data, "InChIKey-Planar", "IK2D")
-    gnps_data = standardize_column_names(gnps_data, "#Scan#", "feature_id")
-    gnps_data = standardize_column_names(gnps_data, "Smiles", "SMILES")
-    gnps_data = prefix_columns(gnps_data, "gnps_", exclude_columns=[])
-    gnps_data = standardize_column_names(gnps_data, "gnps_feature_id", "feature_id")
+    data_frames = []
 
-    # For debugging we pprint the dataframes
-    # pprint(gnps_data)
+    if gnps_file:
+        gnps_data = pd.read_csv(gnps_file, sep="\t")
+        gnps_data = standardize_column_names(gnps_data, "InChIKey-Planar", "IK2D")
+        gnps_data = standardize_column_names(gnps_data, "#Scan#", "feature_id")
+        gnps_data = standardize_column_names(gnps_data, "Smiles", "SMILES")
+        gnps_data = prefix_columns(gnps_data, "gnps_", exclude_columns=[])
+        gnps_data = standardize_column_names(gnps_data, "gnps_feature_id", "feature_id")
+        data_frames.append(gnps_data)
 
-    # Read and process Sirius data
-    sirius_data = pd.read_csv(sirius_file, sep="\t")
-    sirius_data = standardize_column_names(sirius_data, "InChIkey2D", "IK2D")
-    sirius_data = standardize_column_names(sirius_data, "id", "feature_id")
-    sirius_data = standardize_column_names(sirius_data, "smiles", "SMILES")
-    sirius_data = prefix_columns(sirius_data, "sirius_", exclude_columns=[])
-    sirius_data = extract_feature_id(sirius_data, "sirius_feature_id")
-    sirius_data = standardize_column_names(sirius_data, "sirius_feature_id", "feature_id")
+    if sirius_file:
+        # Read and process Sirius data
+        sirius_data = pd.read_csv(sirius_file, sep="\t")
+        sirius_data = standardize_column_names(sirius_data, "InChIkey2D", "IK2D")
+        sirius_data = standardize_column_names(sirius_data, "id", "feature_id")
+        sirius_data = standardize_column_names(sirius_data, "smiles", "SMILES")
+        sirius_data = prefix_columns(sirius_data, "sirius_", exclude_columns=[])
+        sirius_data = extract_feature_id(sirius_data, "sirius_feature_id")
+        sirius_data = standardize_column_names(sirius_data, "sirius_feature_id", "feature_id")
+        data_frames.append(sirius_data)
 
-    # For debugging we pprint the dataframes
-    # pprint(sirius_data)
+    if isdb_file:
+        isdb_data = pd.read_csv(isdb_file, sep="\t")
+        isdb_data = standardize_column_names(isdb_data, "short_inchikey", "IK2D")
+        isdb_data = standardize_column_names(isdb_data, "feature_id", "feature_id")
+        isdb_data = standardize_column_names(isdb_data, "structure_smiles", "SMILES")
+        isdb_data = prefix_columns(isdb_data, "isdb_", exclude_columns=[])
+        isdb_data = standardize_column_names(isdb_data, "isdb_feature_id", "feature_id")
+        data_frames.append(isdb_data)
 
-    # Read and process ISDB data
-    isdb_data = pd.read_csv(isdb_file, sep="\t")
-    isdb_data = standardize_column_names(isdb_data, "short_inchikey", "IK2D")
-    isdb_data = standardize_column_names(isdb_data, "feature_id", "feature_id")
-    isdb_data = standardize_column_names(isdb_data, "structure_smiles", "SMILES")
-    isdb_data = prefix_columns(isdb_data, "isdb_", exclude_columns=[])
-    isdb_data = standardize_column_names(isdb_data, "isdb_feature_id", "feature_id")
+    if not data_frames:
+        raise DataFileError()
 
-    # For debugging we pprint the dataframes
-    # pprint(isdb_data)
-
-    # Merge multiple dataframes horizontally on 'feature_id
-
-    dataframes = [gnps_data, sirius_data, isdb_data]
-
-    merged_data = reduce(lambda left, right: pd.merge(left, right, on=["feature_id"], how="outer"), dataframes)
+    # Merge the dataframes horizontally on 'feature_id'
+    merged_data = reduce(lambda left, right: pd.merge(left, right, on="feature_id", how="outer"), data_frames)
 
     # Create the 'Sources' column. Fill it according the content of the tool_IK2D columns.
     # E.g. if sirius_IK2D is not null and matches isdb_IK2D, then the source is 'SIRIUS, ISDB'

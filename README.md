@@ -56,8 +56,10 @@ python -m met_annot_unifier.cli align-vertically --gnps-file <path-to-gnps-table
 You can prune the aligned tables to remove rows with missing values in the columns of interest. This can be useful to remove rows with missing values in the columns used to merge the tables.
 
 ```bash
-python -m met_annot_unifier.cli prune-table --input <path-to-aligned-table> --output <output-path>
+python -m met_annot_unifier.cli prune-table --input <path-to-aligned-table> --list-columns <key-in-config-file> --output <output-path>
 ```
+
+The `--list-columns` argument should be a key in the `column_config.yaml` file that contains a list of columns to be used to prune the table. You can edit this file [here](https://mapp-metabolomics-unit.github.io/met-annot-unifier/config/column_config.yaml).
 
 ### Example
 
@@ -68,6 +70,14 @@ python -m met_annot_unifier.cli align-horizontally --gnps-file examples/data/in/
 python -m met_annot_unifier.cli prune-table --input-file examples/data/out/aligned_table_horizontally.tsv --list-columns "minimal_cytoscape" -o examples/data/out/aligned_table_horizontally_pruned_cytoscape.tsv
 ```
 
+Since the input file arguments are optional, you can also choose to treat only ISDB and Sirius tables for example.
+
+````bash
+python -m met_annot_unifier.cli align-horizontally --sirius-file examples/data/in/sirius_output_example.tsv --isdb-file examples/data/in/isdb_output_example.tsv --output examples/data/out/aligned_table_horizontally_isdb_sirius.tsv
+python -m met_annot_unifier.cli prune-table --input-file examples/data/out/aligned_table_horizontally_isdb_sirius.tsv --list-columns "minimal_cytoscape_no_gnps" -o examples/data/out/aligned_table_horizontally_pruned_isdb_sirius_cytoscape.tsv
+```
+
 ---
 
 Repository initiated with [fpgmaas/cookiecutter-poetry](https://github.com/fpgmaas/cookiecutter-poetry).
+````
