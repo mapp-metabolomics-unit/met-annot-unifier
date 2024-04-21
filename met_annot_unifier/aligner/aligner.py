@@ -1,4 +1,5 @@
 from functools import reduce
+from typing import Optional
 
 import pandas as pd
 
@@ -11,92 +12,74 @@ from met_annot_unifier.aligner.parser import (
     standardize_column_names,
 )
 from met_annot_unifier.aligner.utils import count_sources, determine_source
-
-gnps_file = "/Users/pma/Dropbox/git_repos/mapp-metabolomics-unit/met-annot-unifier/tests/data/gnps_output_example.tsv"
-sirius_file = (
-    "/Users/pma/Dropbox/git_repos/mapp-metabolomics-unit/met-annot-unifier/tests/data/sirius_output_example.tsv"
-)
-isdb_file = "/Users/pma/Dropbox/git_repos/mapp-metabolomics-unit/met-annot-unifier/tests/data/isdb_output_example.tsv"
+from met_annot_unifier.exceptions import DataFileError
 
 
-def align_data_vertically(gnps_file: str, sirius_file: str, isdb_file: str) -> pd.DataFrame:
+def align_data_vertically(
+    gnps_file: Optional[str] = None, sirius_file: Optional[str] = None, isdb_file: Optional[str] = None
+) -> pd.DataFrame:
     """
-    Aligns and merges data from GNPS, Sirius, and ISDB datasets. This is done vertically, in other words, we keep go from a wide to long format.
+    Aligns and merges data from GNPS, Sirius, and ISDB datasets optionally. Files can be provided for any subset of these datasets.
     The function standardizes column names, prefixes them to indicate their source, merges the data based on 'feature_id'
     and 'IK2D', and then creates consolidated 'Sources' and 'SMILES' columns.
 
     Args:
-    gnps_file (str): File path for the GNPS data in TSV format.
-    sirius_file (str): File path for the Sirius data in TSV format.
-    isdb_file (str): File path for the ISDB data in TSV format.
+        gnps_file (str, optional): File path for the GNPS data in TSV format.
+        sirius_file (str, optional): File path for the Sirius data in TSV format.
+        isdb_file (str, optional): File path for the ISDB data in TSV format.
 
     Returns:
-    pandas.DataFrame: A DataFrame with aligned and merged data from GNPS, Sirius, and ISDB.
+        pd.DataFrame: A DataFrame with aligned and merged data from the provided sources.
 
     Example:
-    >>> gnps_file = 'path/to/gnps_data.tsv'
-    >>> sirius_file = 'path/to/sirius_data.tsv'
-    >>> isdb_file = 'path/to/isdb_data.tsv'
-    >>> aligned_data = align_data(gnps_file, sirius_file, isdb_file)
-    >>> print(aligned_data.columns)
-    Index(['feature_id', 'IK2D', 'Sources', 'SMILES', ...], dtype='object')
+        >>> gnps_file = 'path/to/gnps_data.tsv'
+        >>> sirius_file = 'path/to/sirius_data.tsv'
+        >>> aligned_data = align_data_vertically(gnps_file=gnps_file, sirius_file=sirius_file)
+        >>> print(aligned_data.columns)
+        Index(['feature_id', 'IK2D', 'Sources', 'SMILES', ...], dtype='object')
     """
 
-    # Read and process GNPS data
-    gnps_data = process_gnps_data(gnps_file)
+    data_frames = []
 
-    # For debugging we pprint the dataframes
-    # pprint(gnps_data)
+    if gnps_file:
+        gnps_data = process_gnps_data(gnps_file)
+        data_frames.append(gnps_data)
 
-    # Read and process Sirius data
-    sirius_data = process_sirius_data(sirius_file)
+    if sirius_file:
+        sirius_data = process_sirius_data(sirius_file)
+        data_frames.append(sirius_data)
 
-    # For debugging we pprint the dataframes
-    # pprint(sirius_data)
+    if isdb_file:
+        isdb_data = process_isdb_data(isdb_file)
+        data_frames.append(isdb_data)
 
-    # Read and process ISDB data
-    isdb_data = process_isdb_data(isdb_file)
+    # Ensure that at least one data frame has been loaded
+    if not data_frames:
+        raise DataFileError()
 
-    # For debugging we pprint the dataframes
-    # pprint(isdb_data)
-
-    # Merge the dataframes on 'feature_id' and 'InChiKey' with an outer join
-    combined_data = pd.concat([gnps_data, sirius_data, isdb_data], axis=0, ignore_index=True)
+    # Concatenate all available data frames
+    combined_data = pd.concat(data_frames, axis=0, ignore_index=True)
     # Group by 'feature_id' and 'IK2D' and combine the annotations
     merged_data = combined_data.groupby(["feature_id", "IK2D"], as_index=False).agg(
         lambda x: ", ".join(x.dropna().astype(str).unique())
     )
 
-    # Create the 'Sources' column by concatenating gnps_Source, isdb_Source, and sirius_Source
+    # Create the 'Sources' column
+    source_columns = [col for col in merged_data.columns if col.endswith("annotation_source")]
     merged_data["Sources"] = merged_data.apply(
-        lambda row: "|".join(filter(None, [row.get("gnps_Source"), row.get("isdb_Source"), row.get("sirius_Source")])),
-        axis=1,
+        lambda row: "|".join(sorted(filter(None, [row.get(col) for col in source_columns]))), axis=1
     )
+    merged_data.drop(columns=source_columns, inplace=True)
 
-    # The tools_Source columns are no longer needed. They are dropped.
-
-    merged_data.drop(columns=["gnps_Source", "isdb_Source", "sirius_Source"], inplace=True)
-
-    # Create a SMILES column by choosing form the sirius_SMILES, isdb_SMILES, and gnps_smiles columns with this order of preference (sirius, isdb, gnps)
-
+    # Handle the SMILES column
+    smiles_columns = [col for col in merged_data.columns if "SMILES" in col]
     merged_data["SMILES"] = merged_data.apply(
-        lambda row: row.get("sirius_SMILES")
-        if row.get("sirius_SMILES")
-        else row.get("isdb_SMILES")
-        if row.get("isdb_SMILES")
-        else row.get("gnps_SMILES"),
-        axis=1,
+        lambda row: next((row[col] for col in smiles_columns if row[col]), None), axis=1
     )
 
-    # Select columns
-
+    # Select and reorder columns
     selected_columns = ["feature_id", "IK2D", "Sources", "SMILES"]
-
-    # Place the selected columns at the front of the dataframe
-
-    merged_data = merged_data[
-        selected_columns + [column for column in merged_data.columns if column not in selected_columns]
-    ]
+    merged_data = merged_data[selected_columns + [col for col in merged_data.columns if col not in selected_columns]]
 
     return merged_data
 

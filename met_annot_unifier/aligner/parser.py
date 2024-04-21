@@ -108,16 +108,16 @@ def prefix_columns(df: pd.DataFrame, prefix: str, exclude_columns: Optional[list
 
 def add_source_column(df: pd.DataFrame, source_name: str) -> pd.DataFrame:
     """
-    Adds a 'Source' column to a dataframe, labeling all rows with the specified source name.
+    Adds a 'annotation_source' column to a dataframe, labeling all rows with the specified source name.
 
     Args:
     df (pandas.DataFrame): The dataframe to modify.
     source_name (str): The name of the source to add (e.g., 'GNPS', 'ISDB', 'SIRIUS').
 
     Returns:
-    pandas.DataFrame: The dataframe with the 'Source' column added.
+    pandas.DataFrame: The dataframe with the 'annotation_source' column added.
     """
-    df["Source"] = source_name
+    df["annotation_source"] = source_name
     return df
 
 
