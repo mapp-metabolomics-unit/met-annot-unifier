@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "met-annot-unifier"
-version = "0.0.3"
+version = "0.0.4a0"
 description = "A Python project to combine tabular outputs from GNPS, Sirius and ISDB"
 authors = ["Pierre-Marie Allard <pierre-marie.allard@unifr.ch>"]
 repository = "https://github.com/mapp-metabolomics-unit/met-annot-unifier"

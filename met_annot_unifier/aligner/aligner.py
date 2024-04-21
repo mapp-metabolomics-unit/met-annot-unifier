@@ -72,7 +72,15 @@ def align_data_vertically(
     merged_data.drop(columns=source_columns, inplace=True)
 
     # Handle the SMILES column
-    smiles_columns = [col for col in merged_data.columns if "SMILES" in col]
+    # Specify the priority order for SMILES columns explicitly
+    smiles_columns = [
+        "sirius_SMILES",  # Highest priority
+        "isdb_SMILES",
+        "gnps_SMILES",  # Lowest priority
+    ]
+
+    # Check and keep only those columns that actually exist in the merged data
+    smiles_columns = [col for col in smiles_columns if col in merged_data.columns]
     merged_data["SMILES"] = merged_data.apply(
         lambda row: next((row[col] for col in smiles_columns if row[col]), None), axis=1
     )
