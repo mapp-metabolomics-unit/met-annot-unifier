@@ -70,19 +70,21 @@ def align_horizontally(gnps_file: str, sirius_file: str, isdb_file: str, output:
 # Predefined lists of columns are proposed to the user and should be available in the CLI options.
 @cli.command()
 @click.option("--input-file", type=click.Path(exists=True), help="Path to the input file.")
+@click.option("--remove", is_flag=True, help="Removes the specified columns instead of keeping them.")
 @click.option(
     "--list-columns",
-    type=click.Choice(["gnps", "sirius", "isdb", "test"]),
+    type=click.Choice(["gnps", "sirius", "isdb", "test", "minimal_datawarrior", "minimal_cytoscape"]),
     multiple=True,
     help="List of columns to remove, can select multiple separated by spaces.",
 )
 @click.option("--output", "-o", type=click.Path(), help="Output file to save the pruned data.")
-def prune_table(input_file: str, list_columns: str, output: Optional[str] = None) -> None:
+def prune_table(input_file: str, list_columns: str, remove: bool, output: Optional[str] = None) -> None:
     """CLI tool to remove columns from a DataFrame.
 
     Args:
         input_file (str): Path to the input file.
         list_columns (str): List of columns to remove.
+        remove (bool): If True, removes only the specified columns; otherwise, keeps them.
         output (str, optional): Output file to save the pruned data. Defaults to None.
 
     Returns:
@@ -98,11 +100,11 @@ def prune_table(input_file: str, list_columns: str, output: Optional[str] = None
     for list_name in list_columns:  # list_columns is a tuple of selections
         all_columns_to_remove.extend(columns_to_remove[list_name])
 
-    # Remove duplicates in the list
-    all_columns_to_remove = list(set(all_columns_to_remove))
+    # # Remove duplicates in the list
+    # all_columns_to_remove = list(set(all_columns_to_remove))
 
     # Prune the table
-    pruned_data = table_pruner(df, all_columns_to_remove)
+    pruned_data = table_pruner(df, all_columns_to_remove, remove=remove)
 
     if output:
         pruned_data.to_csv(output, index=False, sep="\t")

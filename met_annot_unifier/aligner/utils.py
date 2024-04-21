@@ -20,6 +20,13 @@ def determine_source(row: pd.Series) -> str:
     if row["sirius_IK2D"] == row["isdb_IK2D"]:
         sources.append("ISDB")
         sources.append("SIRIUS")
+        # Check individual sources
+    if "GNPS" not in sources and pd.notna(row["gnps_IK2D"]):
+        sources.append("GNPS")
+    if "SIRIUS" not in sources and pd.notna(row["sirius_IK2D"]):
+        sources.append("SIRIUS")
+    if "ISDB" not in sources and pd.notna(row["isdb_IK2D"]):
+        sources.append("ISDB")
     return "|".join(sorted(set(sources)))
 
 
@@ -31,17 +38,24 @@ def count_sources(source_str: str) -> int:
     return 0
 
 
-def table_pruner(df: pd.DataFrame, columns: list) -> pd.DataFrame:
+def table_pruner(df: pd.DataFrame, columns: list, remove: bool = False) -> pd.DataFrame:
     """
-    Function to remove columns from a DataFrame
+    Function to remove or keep only specified columns from a DataFrame.
+
     Args:
-    df (pandas.DataFrame): Input DataFrame
-    columns (list): List of columns to remove
+        df (pandas.DataFrame): Input DataFrame.
+        columns (list): List of columns to either remove or keep.
+        remove (bool): If True, removes specified columns. If False, keeps only specified columns.
 
     Returns:
-    pandas.DataFrame: DataFrame with specified columns removed
+        pandas.DataFrame: DataFrame after columns have been either removed or retained.
     """
-    return df.drop(columns=columns, axis=1)
+    if remove:
+        # Drop specified columns and return the DataFrame
+        return df.drop(columns=columns, axis=1)
+    else:
+        # Keep only specified columns and return the DataFrame
+        return df[columns]
 
 
 def load_configuration(config_filename: str) -> Dict[str, Any]:

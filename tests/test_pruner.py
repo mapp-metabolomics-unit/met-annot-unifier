@@ -24,7 +24,7 @@ def temp_dir(tmpdir):
     return tmpdir
 
 
-def test_prune_valid_inputs(temp_dir):
+def test_prune_valid_inputs_keep(temp_dir):
     df = create_sample_dataframe()
     input_file = temp_dir.join("input.csv")
     output_file = temp_dir.join("output.csv")
@@ -33,6 +33,28 @@ def test_prune_valid_inputs(temp_dir):
     runner = CliRunner()
     result = runner.invoke(
         cli, ["prune-table", "--input-file", str(input_file), "--list-columns", "test", "-o", str(output_file)]
+    )
+
+    print(result.output)
+
+    assert result.exit_code == 0
+    assert "Pruned data saved to" in result.output
+    output_df = pd.read_csv(output_file, sep="\t")
+    assert "gnps_SpectrumID" in output_df.columns
+    assert "sirius_SMILES" in output_df.columns
+    assert "isdb_structure_nameTraditional" not in output_df.columns
+
+
+def test_prune_valid_inputs_remove(temp_dir):
+    df = create_sample_dataframe()
+    input_file = temp_dir.join("input.csv")
+    output_file = temp_dir.join("output.csv")
+    df.to_csv(input_file, index=False, sep="\t")
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        ["prune-table", "--remove", "--input-file", str(input_file), "--list-columns", "test", "-o", str(output_file)],
     )
 
     print(result.output)
