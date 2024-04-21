@@ -68,8 +68,17 @@ def load_configuration(config_filename: str) -> Dict[str, Any]:
     Returns:
         Dict[str, Any]: Configuration dictionary.
     """
-    with resources.open_text("met_annot_unifier.config", config_filename) as config_file:
+    package = "met_annot_unifier.config"
+
+    # New way to access resources using importlib.resources
+    resource_path = resources.files(package) / config_filename
+    print(f"Resource path: {resource_path}")
+    with resource_path.open("r", encoding="utf-8") as config_file:
         config = json.load(config_file)
+
+    # current_path = Path(__file__).resolve()
+    # print(f"Current file path: {current_path}")
+    # print(f"Current working directory: {Path.cwd()}")
 
     # Cast the loaded config to Dict[str, Any] to satisfy type checkers
     return cast(Dict[str, Any], config)
