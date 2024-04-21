@@ -35,7 +35,7 @@ Get help on the available modes with:
 python -m met_annot_unifier.cli --help
 ```
 
-#### Examples
+#### Align tables
 
 You can align the annotations tables from GNPS, Sirius and ISDB using two modes:
 
@@ -51,10 +51,21 @@ python -m met_annot_unifier.cli align-horizontally --gnps-file <path-to-gnps-tab
 python -m met_annot_unifier.cli align-vertically --gnps-file <path-to-gnps-table> --sirius-file <path-to-sirius-table> --isdb-file <path-to-isdb-table> --output <output-path>
 ```
 
-You can find example tables in the `examples/data` folder of this repository. So from the root of this repository you can run the following command to align the tables horizontally:
+#### Pruning tables
+
+You can prune the aligned tables to remove rows with missing values in the columns of interest. This can be useful to remove rows with missing values in the columns used to merge the tables.
 
 ```bash
-python -m met_annot_unifier.cli align-horizontally --gnps-file examples/data/gnps_output_example.tsv --sirius-file examples/data/sirius_output_example.tsv --isdb-file examples/data/isdb_output_example.tsv --output examples/data/aligned_table_horizontally.csv
+python -m met_annot_unifier.cli prune-table --input <path-to-aligned-table> --output <output-path>
+```
+
+### Example
+
+You can align the GNPS, ISDB and Sirius tables found in the `examples/data/in` folder of this repository and prune them to have a Cytoscape compatible table with the following commands:
+
+```bash
+python -m met_annot_unifier.cli align-horizontally --gnps-file examples/data/in/gnps_output_example.tsv --sirius-file examples/data/in/sirius_output_example.tsv --isdb-file examples/data/in/isdb_output_example.tsv --output examples/data/out/aligned_table_horizontally.tsv
+python -m met_annot_unifier.cli prune-table --input-file examples/data/out/aligned_table_horizontally.tsv --list-columns "minimal_cytoscape" -o examples/data/out/aligned_table_horizontally_pruned_cytoscape.tsv
 ```
 
 ---
