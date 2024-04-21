@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "met_annot_unifier"
+name = "met-annot-unifier"
 version = "0.0.1"
 description = "A Python project to combine tabular outputs from GNPS, Sirius and ISDB"
 authors = ["Pierre-Marie Allard <pierre-marie.allard@unifr.ch>"]
