@@ -14,10 +14,6 @@ from met_annot_unifier.aligner.parser import (
 from met_annot_unifier.aligner.utils import count_sources, determine_source
 from met_annot_unifier.exceptions import DataFileError
 
-gnps_file = "examples/data/in/gnps_output_example.tsv"
-sirius_file = "examples/data/in/sirius_output_example.tsv"
-isdb_file = "examples/data/in/isdb_output_example.tsv"
-
 
 def align_data_vertically(
     gnps_file: Optional[str] = None,
@@ -123,8 +119,10 @@ def align_data_horizontally(
 
     if canopus_file:
         canopus_data = pd.read_csv(canopus_file, sep="\t")
-        canopus_data = standardize_column_names(canopus_data, "feature_id", "feature_id")
+        canopus_data = standardize_column_names(canopus_data, "id", "feature_id")
         canopus_data = prefix_columns(canopus_data, "canopus_", exclude_columns=[])
+        canopus_data = extract_feature_id(canopus_data, "canopus_feature_id")
+        canopus_data = standardize_column_names(canopus_data, "canopus_feature_id", "feature_id")
         data_frames.append(canopus_data)
 
     if gnps_file:
