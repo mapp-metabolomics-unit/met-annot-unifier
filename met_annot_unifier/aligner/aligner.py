@@ -14,9 +14,15 @@ from met_annot_unifier.aligner.parser import (
 from met_annot_unifier.aligner.utils import count_sources, determine_source
 from met_annot_unifier.exceptions import DataFileError
 
+gnps_file = "examples/data/in/gnps_output_example.tsv"
+sirius_file = "examples/data/in/sirius_output_example.tsv"
+isdb_file = "examples/data/in/isdb_output_example.tsv"
+
 
 def align_data_vertically(
-    gnps_file: Optional[str] = None, sirius_file: Optional[str] = None, isdb_file: Optional[str] = None
+    gnps_file: Optional[str] = None,
+    isdb_file: Optional[str] = None,
+    sirius_file: Optional[str] = None,
 ) -> pd.DataFrame:
     """
     Aligns and merges data from GNPS, Sirius, and ISDB datasets optionally. Files can be provided for any subset of these datasets.
@@ -45,20 +51,20 @@ def align_data_vertically(
         gnps_data = process_gnps_data(gnps_file)
         data_frames.append(gnps_data)
 
-    if sirius_file:
-        sirius_data = process_sirius_data(sirius_file)
-        data_frames.append(sirius_data)
-
     if isdb_file:
         isdb_data = process_isdb_data(isdb_file)
         data_frames.append(isdb_data)
+
+    if sirius_file:
+        sirius_data = process_sirius_data(sirius_file)
+        data_frames.append(sirius_data)
 
     # Ensure that at least one data frame has been loaded
     if not data_frames:
         raise DataFileError()
 
     # Concatenate all available data frames
-    combined_data = pd.concat(data_frames, axis=0, ignore_index=True)
+    combined_data = pd.concat([df for df in data_frames if not df.empty], axis=0, ignore_index=True)
     # Group by 'feature_id' and 'IK2D' and combine the annotations
     merged_data = combined_data.groupby(["feature_id", "IK2D"], as_index=False).agg(
         lambda x: ", ".join(x.dropna().astype(str).unique())
@@ -93,23 +99,33 @@ def align_data_vertically(
 
 
 def align_data_horizontally(
-    gnps_file: Optional[str] = None, sirius_file: Optional[str] = None, isdb_file: Optional[str] = None
+    canopus_file: Optional[str] = None,
+    gnps_file: Optional[str] = None,
+    isdb_file: Optional[str] = None,
+    sirius_file: Optional[str] = None,
 ) -> pd.DataFrame:
     """
-    Aligns and merges data from GNPS, Sirius, and ISDB datasets, if provided. This function merges the data horizontally,
+    Aligns and merges data from GNPS, Sirius, ISDB  and CANOPUS datasets, if provided. This function merges the data horizontally,
     keeping the data in a wide format. The function standardizes column names, prefixes them to indicate their source,
     and merges the data based on 'feature_id'.
 
     Args:
+    canopus_file (Optional[str]): File path for the CANOPUS data in TSV format.
     gnps_file (Optional[str]): File path for the GNPS data in TSV format.
-    sirius_file (Optional[str]): File path for the Sirius data in TSV format.
     isdb_file (Optional[str]): File path for the ISDB data in TSV format.
+    sirius_file (Optional[str]): File path for the Sirius data in TSV format.
 
     Returns:
     pd.DataFrame: A DataFrame with aligned and merged data from the provided sources.
     """
 
     data_frames = []
+
+    if canopus_file:
+        canopus_data = pd.read_csv(canopus_file, sep="\t")
+        canopus_data = standardize_column_names(canopus_data, "feature_id", "feature_id")
+        canopus_data = prefix_columns(canopus_data, "canopus_", exclude_columns=[])
+        data_frames.append(canopus_data)
 
     if gnps_file:
         gnps_data = pd.read_csv(gnps_file, sep="\t")
@@ -119,6 +135,15 @@ def align_data_horizontally(
         gnps_data = prefix_columns(gnps_data, "gnps_", exclude_columns=[])
         gnps_data = standardize_column_names(gnps_data, "gnps_feature_id", "feature_id")
         data_frames.append(gnps_data)
+
+    if isdb_file:
+        isdb_data = pd.read_csv(isdb_file, sep="\t")
+        isdb_data = standardize_column_names(isdb_data, "short_inchikey", "IK2D")
+        isdb_data = standardize_column_names(isdb_data, "feature_id", "feature_id")
+        isdb_data = standardize_column_names(isdb_data, "structure_smiles", "SMILES")
+        isdb_data = prefix_columns(isdb_data, "isdb_", exclude_columns=[])
+        isdb_data = standardize_column_names(isdb_data, "isdb_feature_id", "feature_id")
+        data_frames.append(isdb_data)
 
     if sirius_file:
         # Read and process Sirius data
@@ -130,15 +155,6 @@ def align_data_horizontally(
         sirius_data = extract_feature_id(sirius_data, "sirius_feature_id")
         sirius_data = standardize_column_names(sirius_data, "sirius_feature_id", "feature_id")
         data_frames.append(sirius_data)
-
-    if isdb_file:
-        isdb_data = pd.read_csv(isdb_file, sep="\t")
-        isdb_data = standardize_column_names(isdb_data, "short_inchikey", "IK2D")
-        isdb_data = standardize_column_names(isdb_data, "feature_id", "feature_id")
-        isdb_data = standardize_column_names(isdb_data, "structure_smiles", "SMILES")
-        isdb_data = prefix_columns(isdb_data, "isdb_", exclude_columns=[])
-        isdb_data = standardize_column_names(isdb_data, "isdb_feature_id", "feature_id")
-        data_frames.append(isdb_data)
 
     if not data_frames:
         raise DataFileError()

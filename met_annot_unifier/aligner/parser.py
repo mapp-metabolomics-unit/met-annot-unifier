@@ -10,6 +10,13 @@ def parse_gnps(file_path: str) -> pd.DataFrame:
     return data
 
 
+def parse_isdb(file_path: str) -> pd.DataFrame:
+    # Read the ISDB output file
+    data = pd.read_csv(file_path, sep="\t")
+    # Extract necessary columns and any other processing
+    return data
+
+
 def parse_sirius(file_path: str) -> pd.DataFrame:
     # Read the Sirius output file
     data = pd.read_csv(file_path, sep="\t")
@@ -17,8 +24,8 @@ def parse_sirius(file_path: str) -> pd.DataFrame:
     return data
 
 
-def parse_isdb(file_path: str) -> pd.DataFrame:
-    # Read the ISDB output file
+def parse_canopus(file_path: str) -> pd.DataFrame:
+    # Read the Canopus output file
     data = pd.read_csv(file_path, sep="\t")
     # Extract necessary columns and any other processing
     return data
@@ -152,6 +159,37 @@ def process_gnps_data(gnps_file: str) -> pd.DataFrame:
     return gnps_data
 
 
+def process_isdb_data(isdb_file: str) -> pd.DataFrame:
+    """
+    Reads and processes ISDB data. This function standardizes column names, prefixes them to indicate their source,
+    and extracts 'feature_id' and 'IK2D' from the data.
+
+    Args:
+    isdb_file (str): File path for the ISDB data in TSV format.
+
+    Returns:
+    pandas.DataFrame: A DataFrame with processed ISDB data.
+
+    Example:
+    >>> isdb_file = 'path/to/isdb_data.tsv'
+    >>> isdb_data = process_isdb_data(isdb_file)
+    >>> print(isdb_data.columns)
+    Index(['feature_id', 'IK2D', ...], dtype='object')
+    """
+
+    # Read and process ISDB data
+    isdb_data = pd.read_csv(isdb_file, sep="\t")
+    isdb_data = add_source_column(isdb_data, "isdb")
+    isdb_data = standardize_column_names(isdb_data, "short_inchikey", "IK2D")
+    isdb_data = standardize_column_names(isdb_data, "feature_id", "feature_id")
+    isdb_data = standardize_column_names(isdb_data, "structure_smiles", "SMILES")
+    isdb_data = prefix_columns(isdb_data, "isdb_", exclude_columns=[])
+    isdb_data = standardize_column_names(isdb_data, "isdb_IK2D", "IK2D")
+    isdb_data = standardize_column_names(isdb_data, "isdb_feature_id", "feature_id")
+
+    return isdb_data
+
+
 def process_sirius_data(sirius_file: str) -> pd.DataFrame:
     """
     Reads and processes Sirius data. This function standardizes column names, prefixes them to indicate their source,
@@ -184,32 +222,30 @@ def process_sirius_data(sirius_file: str) -> pd.DataFrame:
     return sirius_data
 
 
-def process_isdb_data(isdb_file: str) -> pd.DataFrame:
+def process_canopus_data(canopus_file: str) -> pd.DataFrame:
     """
-    Reads and processes ISDB data. This function standardizes column names, prefixes them to indicate their source,
-    and extracts 'feature_id' and 'IK2D' from the data.
+    Reads and processes Canopus data. This function standardizes column names, prefixes them to indicate their source,
+    and extracts 'feature_id' from the data.
 
     Args:
-    isdb_file (str): File path for the ISDB data in TSV format.
+    canopus_file (str): File path for the Canopus data in TSV format.
 
     Returns:
-    pandas.DataFrame: A DataFrame with processed ISDB data.
+    pandas.DataFrame: A DataFrame with processed Canopus data.
 
     Example:
-    >>> isdb_file = 'path/to/isdb_data.tsv'
-    >>> isdb_data = process_isdb_data(isdb_file)
-    >>> print(isdb_data.columns)
-    Index(['feature_id', 'IK2D', ...], dtype='object')
+    >>> canopus_file = 'path/to/canopus_data.tsv'
+    >>> canopus_data = process_canopus_data(canopus_file)
+    >>> print(canopus_data.columns)
+    Index(['feature_id', ...], dtype='object')
     """
 
-    # Read and process ISDB data
-    isdb_data = pd.read_csv(isdb_file, sep="\t")
-    isdb_data = add_source_column(isdb_data, "isdb")
-    isdb_data = standardize_column_names(isdb_data, "short_inchikey", "IK2D")
-    isdb_data = standardize_column_names(isdb_data, "feature_id", "feature_id")
-    isdb_data = standardize_column_names(isdb_data, "structure_smiles", "SMILES")
-    isdb_data = prefix_columns(isdb_data, "isdb_", exclude_columns=[])
-    isdb_data = standardize_column_names(isdb_data, "isdb_IK2D", "IK2D")
-    isdb_data = standardize_column_names(isdb_data, "isdb_feature_id", "feature_id")
+    # Read and process Canopus data
+    canopus_data = pd.read_csv(canopus_file, sep="\t")
+    canopus_data = add_source_column(canopus_data, "canopus")
+    canopus_data = standardize_column_names(canopus_data, "id", "feature_id")
+    canopus_data = prefix_columns(canopus_data, "canopus_", exclude_columns=[])
+    canopus_data = extract_feature_id(canopus_data, "canopus_feature_id")
+    canopus_data = standardize_column_names(canopus_data, "canopus_feature_id", "feature_id")
 
-    return isdb_data
+    return canopus_data

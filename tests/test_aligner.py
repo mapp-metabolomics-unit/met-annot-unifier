@@ -9,26 +9,26 @@ from met_annot_unifier.aligner.aligner import align_data_horizontally, align_dat
 def test_align_data_vertically():
     # Mock data for GNPS, Sirius, and ISDB
     gnps_mock = pd.DataFrame({"#Scan#": [1, 2], "InChIKey-Planar": ["IK1", "IK2"], "Smiles": ["smile1", "smile2"]})
-    sirius_mock = pd.DataFrame(
-        {"id": ["546_test_1", "546_test_3"], "InChIkey2D": ["IK1", "IK3"], "smiles": ["smile1", "smile3"]}
-    )
     isdb_mock = pd.DataFrame(
         {"feature_id": [2, 3], "short_inchikey": ["IK2", "IK3"], "structure_smiles": ["smile2", "smile3"]}
+    )
+    sirius_mock = pd.DataFrame(
+        {"id": ["546_test_1", "546_test_3"], "InChIkey2D": ["IK1", "IK3"], "smiles": ["smile1", "smile3"]}
     )
 
     # Create temporary files
     with tempfile.NamedTemporaryFile(delete=False, suffix=".tsv", mode="w") as tf_gnps, tempfile.NamedTemporaryFile(
         delete=False, suffix=".tsv", mode="w"
-    ) as tf_sirius, tempfile.NamedTemporaryFile(delete=False, suffix=".tsv", mode="w") as tf_isdb:
+    ) as tf_isdb, tempfile.NamedTemporaryFile(delete=False, suffix=".tsv", mode="w") as tf_sirius:
         gnps_mock.to_csv(tf_gnps.name, sep="\t", index=False)
         # pprint(gnps_mock)
-        sirius_mock.to_csv(tf_sirius.name, sep="\t", index=False)
-        # pprint(sirius_mock)
         isdb_mock.to_csv(tf_isdb.name, sep="\t", index=False)
         # pprint(isdb_mock)
+        sirius_mock.to_csv(tf_sirius.name, sep="\t", index=False)
+        # pprint(sirius_mock)
 
         # Call the align_data function
-        merged_data = align_data_vertically(tf_gnps.name, tf_sirius.name, tf_isdb.name)
+        merged_data = align_data_vertically(tf_gnps.name, tf_isdb.name, tf_sirius.name)
 
     # Assertions
     assert "feature_id" in merged_data.columns
@@ -73,7 +73,7 @@ def test_align_data_splitted():
         # pprint(isdb_mock)
 
         # Call the align_data function
-        merged_data = align_data_vertically(tf_gnps.name, tf_sirius.name, tf_isdb.name)
+        merged_data = align_data_vertically(tf_gnps.name, tf_isdb.name, tf_sirius.name)
 
     # Assertions
     assert "feature_id" in merged_data.columns
@@ -160,7 +160,9 @@ def test_align_data_horizontally():
         # pprint(isdb_mock)
 
         # Call the align_data function
-        merged_data = align_data_horizontally(tf_gnps.name, tf_sirius.name, tf_isdb.name)
+        merged_data = align_data_horizontally(
+            gnps_file=tf_gnps.name, isdb_file=tf_isdb.name, sirius_file=tf_sirius.name
+        )
 
     # Assertions
 
