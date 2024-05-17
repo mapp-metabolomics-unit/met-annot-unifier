@@ -43,12 +43,14 @@ def align_vertically(gnps_file: str, sirius_file: str, isdb_file: str, output: O
 @cli.command()
 @click.option("--canopus-file", type=click.Path(), default=None, help="Path to CANOPUS output file.")
 @click.option("--gnps-file", type=click.Path(), default=None, help="Path to GNPS output file.")
+@click.option("--gnps-mn-file", type=click.Path(), default=None, help="Path to GNPS MN output file.")
 @click.option("--isdb-file", type=click.Path(), default=None, help="Path to ISDB output file.")
 @click.option("--sirius-file", type=click.Path(), default=None, help="Path to Sirius output file.")
 @click.option("--output", "-o", type=click.Path(), help="Output file to save the merged data.")
 def align_horizontally(
     canopus_file: Optional[str],
     gnps_file: Optional[str],
+    gnps_mn_file: Optional[str],
     isdb_file: Optional[str],
     sirius_file: Optional[str],
     output: Optional[str] = None,
@@ -58,6 +60,7 @@ def align_horizontally(
     Args:
         canopus_file (Optional[str]): Path to CANOPUS output file.
         gnps_file (Optional[str]): Path to GNPS output file.
+        gnps_mn_file (Optional[str]): Path to GNPS MN output file.
         sirius_file (Optional[str]): Path to Sirius output file.
         isdb_file (Optional[str]): Path to ISDB output file.
         output (Optional[str]): Output file to save the merged data.
@@ -66,7 +69,11 @@ def align_horizontally(
         A dataframe with the aligned data (if the output option is used, the dataframe is saved to a file)
     """
     aligned_data = align_data_horizontally(
-        canopus_file=canopus_file, gnps_file=gnps_file, isdb_file=isdb_file, sirius_file=sirius_file
+        canopus_file=canopus_file,
+        gnps_file=gnps_file,
+        gnps_mn_file=gnps_mn_file,
+        isdb_file=isdb_file,
+        sirius_file=sirius_file,
     )
 
     if output:

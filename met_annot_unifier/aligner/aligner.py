@@ -11,7 +11,13 @@ from met_annot_unifier.aligner.parser import (
     process_sirius_data,
     standardize_column_names,
 )
-from met_annot_unifier.aligner.utils import count_sources, determine_source
+from met_annot_unifier.aligner.utils import (
+    count_sources,
+    process_IK2D_sources,
+    process_npc_class_sources,
+    process_npc_pathway_sources,
+    process_npc_superclass_sources,
+)
 from met_annot_unifier.exceptions import DataFileError
 
 
@@ -94,9 +100,19 @@ def align_data_vertically(
     return merged_data
 
 
+# met-annot-unifier-cli align-horizontally --canopus-file /Users/pma/Dropbox/git_repos/COMMONS_Lab/SBL.20004.2024/docs/mapp_project_00050/mapp_batch_00109/results/sirius/canopus_compound_summary.tsv --gnps-file /Users/pma/Dropbox/git_repos/COMMONS_Lab/SBL.20004.2024/docs/mapp_project_00050/mapp_batch_00109/results/met_annot_enhancer/686365fe75624ed8be661d43be058592/nf_output/library/merged_results_with_gnps.tsv --gnps-mn-file /Users/pma/Dropbox/git_repos/COMMONS_Lab/SBL.20004.2024/docs/mapp_project_00050/mapp_batch_00109/results/met_annot_enhancer/686365fe75624ed8be661d43be058592/nf_output/networking/clustersummary_with_network.tsv --sirius-file /Users/pma/Dropbox/git_repos/COMMONS_Lab/SBL.20004.2024/docs/mapp_project_00050/mapp_batch_00109/results/sirius/compound_identifications.tsv --isdb-file /Users/pma/Dropbox/git_repos/COMMONS_Lab/SBL.20004.2024/docs/mapp_project_00050/mapp_batch_00109/results/met_annot_enhancer/mapp_batch_00109/mapp_batch_00109_spectral_match_results_repond_flat.tsv --output /Users/pma/Dropbox/git_repos/COMMONS_Lab/SBL.20004.2024/docs/mapp_project_00050/mapp_batch_00109/results/tmp/mapp_batch_00109_met_annot_unified_new.tsv
+
+canopus_file = "/Users/pma/Dropbox/git_repos/COMMONS_Lab/SBL.20004.2024/docs/mapp_project_00050/mapp_batch_00109/results/sirius/canopus_compound_summary.tsv"
+gnps_file = "/Users/pma/Dropbox/git_repos/COMMONS_Lab/SBL.20004.2024/docs/mapp_project_00050/mapp_batch_00109/results/met_annot_enhancer/686365fe75624ed8be661d43be058592/nf_output/library/merged_results_with_gnps.tsv"
+gnps_mn_file = "/Users/pma/Dropbox/git_repos/COMMONS_Lab/SBL.20004.2024/docs/mapp_project_00050/mapp_batch_00109/results/met_annot_enhancer/686365fe75624ed8be661d43be058592/nf_output/networking/clustersummary_with_network.tsv"
+sirius_file = "/Users/pma/Dropbox/git_repos/COMMONS_Lab/SBL.20004.2024/docs/mapp_project_00050/mapp_batch_00109/results/sirius/compound_identifications.tsv"
+isdb_file = "/Users/pma/Dropbox/git_repos/COMMONS_Lab/SBL.20004.2024/docs/mapp_project_00050/mapp_batch_00109/results/met_annot_enhancer/mapp_batch_00109/mapp_batch_00109_spectral_match_results_repond_flat.tsv"
+
+
 def align_data_horizontally(
     canopus_file: Optional[str] = None,
     gnps_file: Optional[str] = None,
+    gnps_mn_file: Optional[str] = None,
     isdb_file: Optional[str] = None,
     sirius_file: Optional[str] = None,
 ) -> pd.DataFrame:
@@ -121,6 +137,10 @@ def align_data_horizontally(
         canopus_data = pd.read_csv(canopus_file, sep="\t")
         canopus_data = standardize_column_names(canopus_data, "id", "feature_id")
         canopus_data = prefix_columns(canopus_data, "canopus_", exclude_columns=[])
+        # the CANOPUS NPC classifier columns names are standardized
+        canopus_data = standardize_column_names(canopus_data, "canopus_NPC#pathway", "canopus_npc_pathway")
+        canopus_data = standardize_column_names(canopus_data, "canopus_NPC#superclass", "canopus_npc_superclass")
+        canopus_data = standardize_column_names(canopus_data, "canopus_NPC#class", "canopus_npc_class")
         canopus_data = extract_feature_id(canopus_data, "canopus_feature_id")
         canopus_data = standardize_column_names(canopus_data, "canopus_feature_id", "feature_id")
         data_frames.append(canopus_data)
@@ -131,6 +151,10 @@ def align_data_horizontally(
         gnps_data = standardize_column_names(gnps_data, "#Scan#", "feature_id")
         gnps_data = standardize_column_names(gnps_data, "Smiles", "SMILES")
         gnps_data = prefix_columns(gnps_data, "gnps_", exclude_columns=[])
+        # the GNPS NPC classifier columns names are standardized
+        gnps_data = standardize_column_names(gnps_data, "gnps_npclassifier_pathway", "gnps_npc_pathway")
+        gnps_data = standardize_column_names(gnps_data, "gnps_npclassifier_superclass", "gnps_npc_superclass")
+        gnps_data = standardize_column_names(gnps_data, "gnps_npclassifier_class", "gnps_npc_class")
         gnps_data = standardize_column_names(gnps_data, "gnps_feature_id", "feature_id")
         data_frames.append(gnps_data)
 
@@ -140,6 +164,16 @@ def align_data_horizontally(
         isdb_data = standardize_column_names(isdb_data, "feature_id", "feature_id")
         isdb_data = standardize_column_names(isdb_data, "structure_smiles", "SMILES")
         isdb_data = prefix_columns(isdb_data, "isdb_", exclude_columns=[])
+        # the ISDB NPC classifier columns names are standardized
+        isdb_data = standardize_column_names(
+            isdb_data, "isdb_structure_taxonomy_npclassifier_01pathway", "isdb_npc_pathway"
+        )
+        isdb_data = standardize_column_names(
+            isdb_data, "isdb_structure_taxonomy_npclassifier_02superclass", "isdb_npc_superclass"
+        )
+        isdb_data = standardize_column_names(
+            isdb_data, "isdb_structure_taxonomy_npclassifier_03class", "isdb_npc_class"
+        )
         isdb_data = standardize_column_names(isdb_data, "isdb_feature_id", "feature_id")
         data_frames.append(isdb_data)
 
@@ -160,16 +194,36 @@ def align_data_horizontally(
     # Merge the dataframes horizontally on 'feature_id'
     merged_data = reduce(lambda left, right: pd.merge(left, right, on="feature_id", how="outer"), data_frames)
 
+    # The sources of the annotations are processed and combined
     # Create the 'Sources' column. Fill it according the content of the tool_IK2D columns.
     # E.g. if sirius_IK2D is not null and matches isdb_IK2D, then the source is 'SIRIUS, ISDB'
 
-    merged_data["source"] = merged_data.apply(determine_source, axis=1)
+    merged_data = process_IK2D_sources(merged_data)
+    merged_data = process_npc_pathway_sources(merged_data)
+    merged_data = process_npc_superclass_sources(merged_data)
+    merged_data = process_npc_class_sources(merged_data)
 
-    merged_data["source_number"] = merged_data["source"].apply(count_sources)
+    merged_data["sources_number_IK2D"] = merged_data["sources_IK2D"].apply(count_sources)
+
+    # Load GNPS MN data if provided
+
+    if gnps_mn_file:
+        gnps_mn_data = pd.read_csv(gnps_mn_file, sep="\t")
+        gnps_mn_data = standardize_column_names(gnps_mn_data, "cluster index", "feature_id")
+        gnps_mn_data = prefix_columns(gnps_mn_data, "gnps_mn_", exclude_columns=[])
+        gnps_mn_data = standardize_column_names(gnps_mn_data, "gnps_mn_feature_id", "feature_id")
+        merged_data = pd.merge(merged_data, gnps_mn_data, on="feature_id", how="outer")
 
     # Select columns
 
-    selected_columns = ["feature_id", "source", "source_number"]
+    selected_columns = [
+        "feature_id",
+        "sources_IK2D",
+        "sources_number_IK2D",
+        "sources_npc_pathway",
+        "sources_npc_superclass",
+        "sources_npc_class",
+    ]
 
     # Place the selected columns at the front of the dataframe
 

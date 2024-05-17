@@ -170,14 +170,14 @@ def test_align_data_horizontally():
     print(merged_data)
     assert "feature_id" in merged_data.columns
     assert "IK2D" not in merged_data.columns
-    assert "source" in merged_data.columns
-    assert "source_number" in merged_data.columns
+    assert "sources_IK2D" in merged_data.columns
+    assert "sources_number_IK2D" in merged_data.columns
     assert "sirius_Source" not in merged_data.columns
     assert len(merged_data) == 4  # Expecting 3 merged rows
 
     # Check if 'Sources' column is correctly populated
     for source in ["gnps|sirius", "gnps|sirius", "isdb|sirius", ""]:
-        assert source in merged_data["source"].values
+        assert source in merged_data["sources_IK2D"].values
 
     # Clean up: Remove temporary files
     os.remove(tf_gnps.name)
@@ -217,14 +217,14 @@ def test_align_data_horizontally_partial():
     print(merged_data)
     assert "feature_id" in merged_data.columns
     assert "IK2D" not in merged_data.columns
-    assert "source" in merged_data.columns
-    assert "source_number" in merged_data.columns
+    assert "sources_IK2D" in merged_data.columns
+    assert "sources_number_IK2D" in merged_data.columns
     assert "sirius_Source" not in merged_data.columns
     assert len(merged_data) == 4  # Expecting 3 merged rows
 
     # Check if 'Sources' column is correctly populated
     for source in ["gnps|sirius", "gnps", "sirius", ""]:
-        assert source in merged_data["source"].values
+        assert source in merged_data["sources_IK2D"].values
 
     # Clean up: Remove temporary files
     os.remove(tf_gnps.name)
