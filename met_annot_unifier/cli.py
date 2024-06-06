@@ -31,7 +31,7 @@ def align_vertically(gnps_file: str, sirius_file: str, isdb_file: str, output: O
     Returns:
         A dataframe with the aligned data (if the output option is used, the dataframe is saved to a file)
     """
-    aligned_data = align_data_vertically(gnps_file, sirius_file, isdb_file)
+    aligned_data = align_data_vertically(gnps_file=gnps_file, isdb_file=isdb_file, sirius_file=sirius_file)
 
     if output:
         aligned_data.to_csv(output, index=False, sep="\t")
