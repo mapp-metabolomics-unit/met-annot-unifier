@@ -20,6 +20,7 @@ classifiers = [
 dependencies = [
     "click>=8.1.8",
     "pandas>=2.2.3",
+    "pandas-stubs>=2.2.2.240807",
 ]
 
 [project.urls]
@@ -39,6 +40,7 @@ dev = [
     "mkdocs>=1.4.2",
     "mkdocs-material>=8.5.10",
     "mkdocstrings[python]>=0.26.1",
+    "pandas-stubs>=2.2.2.240807",
 ]
 
 [build-system]
@@ -118,3 +120,7 @@ skip_empty = true
 [tool.coverage.run]
 branch = true
 source = ["met_annot_unifier"]
+
+
+[tool.deptry.per_rule_ignores]
+DEP002 = ["pandas-stubs"]
