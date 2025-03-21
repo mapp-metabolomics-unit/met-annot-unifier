@@ -1,7 +1,7 @@
 # Function to determine matching sources
 import json
 from importlib import resources
-from typing import Any, cast, dict, list
+from typing import Any, cast
 
 import pandas as pd
 from pandas import DataFrame, Series
