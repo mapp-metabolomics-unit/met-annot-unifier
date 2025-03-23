@@ -5,7 +5,7 @@ description = "A Python project to combine tabular outputs from GNPS, Sirius and
 authors = [{ name = "Pierre-Marie Allard", email = "pierre-marie.allard@unifr.ch" }]
 readme = "README.md"
 keywords = ['python']
-requires-python = ">=3.9,<4.0"
+requires-python = ">=3.10,<4.0"
 classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python",
