@@ -1,6 +1,6 @@
 [project]
 name = "met-annot-unifier"
-version = "0.0.1"
+version = "0.0.8"
 description = "A Python project to combine tabular outputs from GNPS, Sirius and ISDB"
 authors = [{ name = "Pierre-Marie Allard", email = "pierre-marie.allard@unifr.ch" }]
 readme = "README.md"
