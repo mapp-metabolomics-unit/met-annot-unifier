@@ -15,7 +15,7 @@ def test_align_data_vertically():
         "structure_smiles": ["smile2", "smile3"],
     })
     sirius_mock = pd.DataFrame({
-        "id": ["546_test_1", "546_test_3"],
+        "mappingFeatureId": ["546_test_1", "546_test_3"],
         "InChIkey2D": ["IK1", "IK3"],
         "smiles": ["smile1", "smile3"],
     })
@@ -57,7 +57,7 @@ def test_align_data_splitted():
     # Mock data for GNPS, Sirius, and ISDB
     gnps_mock = pd.DataFrame({"#Scan#": [1, 2], "InChIKey-Planar": ["IK1", "IK2"], "Smiles": ["smile1", "smile2"]})
     sirius_mock = pd.DataFrame({
-        "id": ["546_test_1", "546_test_3"],
+        "mappingFeatureId": ["546_test_1", "546_test_3"],
         "InChIkey2D": ["IK1", "IK3"],
         "smiles": ["smile1", "smile3"],
     })
@@ -107,7 +107,7 @@ def test_align_data_vertically_partial():
     gnps_mock = pd.DataFrame({"#Scan#": [1, 2], "InChIKey-Planar": ["IK1", "IK2"], "Smiles": ["smile1", "smile2"]})
 
     sirius_mock = pd.DataFrame({
-        "id": ["546_test_1", "546_test_3"],
+        "mappingFeatureId": ["546_test_1", "546_test_3"],
         "InChIkey2D": ["IK1", "IK3"],
         "smiles": ["smile1", "smile3"],
     })
@@ -158,7 +158,7 @@ def test_align_data_horizontally():
         "Smiles": ["smile1", "smile2", ""],
     })
     sirius_mock = pd.DataFrame({
-        "id": ["546_test_1", "546_test_3"],
+        "mappingFeatureId": ["546_test_1", "546_test_3"],
         "InChIkey2D": ["IK1", "IK3"],
         "smiles": ["smile1", "smile3"],
     })
@@ -215,7 +215,7 @@ def test_align_data_horizontally_partial():
         "Smiles": ["smile1", "smile2", ""],
     })
     sirius_mock = pd.DataFrame({
-        "id": ["546_test_1", "546_test_3"],
+        "mappingFeatureId": ["546_test_1", "546_test_3"],
         "InChIkey2D": ["IK1", "IK3"],
         "smiles": ["smile1", "smile3"],
     })

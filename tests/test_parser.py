@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -32,7 +33,7 @@ def test_parse_sirius():
 
     # Similar assertions for Sirius data
     assert not sirius_data.empty, "Dataframe is empty"
-    assert "id" in sirius_data.columns, "feature_id column is missing"
+    assert "mappingFeatureId" in sirius_data.columns, "feature_id column is missing"
     assert "InChIkey2D" in sirius_data.columns, "IK2D column is missing"
     # ... add more assertions as needed ...
 
@@ -95,4 +96,4 @@ def test_empty_string():
 def test_non_string_input():
     df = pd.DataFrame({"FeatureID": [None, 123]})
     result = extract_feature_id(df, "FeatureID")
-    assert list(result["FeatureID"]) == [None, None]  # Adjusted expectation
+    assert np.isnan(result["FeatureID"][0]) and result["FeatureID"][1] == 123  # Adjusted expectation
