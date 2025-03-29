@@ -19,6 +19,7 @@ classifiers = [
 ]
 dependencies = [
     "click>=8.1.8",
+    "ipykernel>=6.29.5",
     "pandas>=2.2.3",
     "pandas-stubs>=2.2.2.240807",
 ]
@@ -27,6 +28,11 @@ dependencies = [
 Homepage = "https://mapp-metabolomics-unit.github.io/met-annot-unifier/"
 Repository = "https://github.com/mapp-metabolomics-unit/met-annot-unifier"
 Documentation = "https://mapp-metabolomics-unit.github.io/met-annot-unifier/"
+
+[project.scripts]
+met-annot-unifier = "met_annot_unifier.__main__:main"
+met-annot-unifier-cli = "met_annot_unifier.cli:cli"
+
 
 [dependency-groups]
 dev = [
