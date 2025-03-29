@@ -129,4 +129,4 @@ source = ["met_annot_unifier"]
 
 
 [tool.deptry.per_rule_ignores]
-DEP002 = ["pandas-stubs"]
+DEP002 = ["pandas-stubs", "ipykernel"]
