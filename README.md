@@ -8,6 +8,8 @@
 
 A Python project to combine tabular outputs from GNPS, Sirius and ISDB
 
+GNPS results produced in offline mode are supported: when `InChIKey-Planar` is missing, the unifier derives it locally from `Smiles` before matching annotations.
+
 - **Github repository**: <https://github.com/mapp-metabolomics-unit/met-annot-unifier/>
 - **Documentation** <https://mapp-metabolomics-unit.github.io/met-annot-unifier/>
 

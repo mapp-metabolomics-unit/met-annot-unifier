@@ -4,6 +4,7 @@ from typing import Optional
 import pandas as pd
 
 from met_annot_unifier.aligner.parser import (
+    add_missing_gnps_planar_inchikey,
     extract_feature_id,
     prefix_columns,
     process_gnps_data,
@@ -147,6 +148,7 @@ def align_data_horizontally(
 
     if gnps_file:
         gnps_data = pd.read_csv(gnps_file, sep="\t")
+        gnps_data = add_missing_gnps_planar_inchikey(gnps_data)
         gnps_data = standardize_column_names(gnps_data, "InChIKey-Planar", "IK2D")
         gnps_data = standardize_column_names(gnps_data, "#Scan#", "feature_id")
         gnps_data = standardize_column_names(gnps_data, "Smiles", "SMILES")

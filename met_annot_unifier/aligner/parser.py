@@ -1,6 +1,38 @@
 from typing import Optional
 
 import pandas as pd
+from rdkit import Chem
+from rdkit.Chem import inchi
+
+MISSING_STRUCTURE_VALUES = {"", "N/A", "NAN", "NONE"}
+
+
+def _planar_inchikey_from_smiles(smiles: object) -> Optional[str]:
+    if pd.isna(smiles) or str(smiles).strip().upper() in MISSING_STRUCTURE_VALUES:
+        return None
+
+    molecule = Chem.MolFromSmiles(str(smiles))
+    if molecule is None:
+        return None
+
+    inchikey = inchi.MolToInchiKey(molecule)
+    return inchikey.split("-", maxsplit=1)[0] if inchikey else None
+
+
+def add_missing_gnps_planar_inchikey(data: pd.DataFrame) -> pd.DataFrame:
+    """Derive missing GNPS planar InChIKeys locally from available SMILES."""
+    if "Smiles" not in data.columns:
+        return data
+
+    column = "InChIKey-Planar"
+    if column not in data.columns:
+        data[column] = pd.NA
+    else:
+        data[column] = data[column].astype("object")
+
+    missing = data[column].isna() | data[column].astype(str).str.strip().str.upper().isin(MISSING_STRUCTURE_VALUES)
+    data.loc[missing, column] = data.loc[missing, "Smiles"].map(_planar_inchikey_from_smiles)
+    return data
 
 
 def parse_gnps(file_path: str) -> pd.DataFrame:
@@ -148,6 +180,7 @@ def process_gnps_data(gnps_file: str) -> pd.DataFrame:
 
     # Read and process GNPS data
     gnps_data = pd.read_csv(gnps_file, sep="\t")
+    gnps_data = add_missing_gnps_planar_inchikey(gnps_data)
     gnps_data = add_source_column(gnps_data, "gnps")
     gnps_data = standardize_column_names(gnps_data, "InChIKey-Planar", "IK2D")
     gnps_data = standardize_column_names(gnps_data, "#Scan#", "feature_id")

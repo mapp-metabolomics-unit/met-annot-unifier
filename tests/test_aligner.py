@@ -260,3 +260,24 @@ def test_align_data_horizontally_partial():
     os.remove(tf_gnps.name)
     os.remove(tf_sirius.name)
     os.remove(tf_isdb.name)
+
+
+def test_align_data_horizontally_derives_missing_gnps_ik2d(tmp_path):
+    gnps_file = tmp_path / "gnps.tsv"
+    isdb_file = tmp_path / "isdb.tsv"
+    pd.DataFrame({
+        "#Scan#": [83],
+        "Compound_Name": ["5-hydroxyectoine [M+H]+"],
+        "Smiles": ["CC1=N[C@@H]([C@@H](O)CN1)C(O)=O"],
+    }).to_csv(gnps_file, sep="\t", index=False)
+    pd.DataFrame({
+        "feature_id": [83],
+        "short_inchikey": ["KIIBBJKLKFTNQO"],
+        "structure_smiles": ["CC1=NC[C@H](O)[C@@H](C(=O)O)N1"],
+    }).to_csv(isdb_file, sep="\t", index=False)
+
+    merged_data = align_data_horizontally(gnps_file=str(gnps_file), isdb_file=str(isdb_file))
+    feature = merged_data.loc[merged_data["feature_id"] == 83].iloc[0]
+
+    assert feature["gnps_IK2D"] == "KIIBBJKLKFTNQO"
+    assert feature["sources_IK2D"] == "gnps|isdb"
