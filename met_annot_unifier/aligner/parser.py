@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 import pandas as pd
 from rdkit import Chem
@@ -7,7 +7,7 @@ from rdkit.Chem import inchi
 MISSING_STRUCTURE_VALUES = {"", "N/A", "NAN", "NONE"}
 
 
-def _planar_inchikey_from_smiles(smiles: object) -> Optional[str]:
+def _planar_inchikey_from_smiles(smiles: Any) -> Optional[str]:
     if pd.isna(smiles) or str(smiles).strip().upper() in MISSING_STRUCTURE_VALUES:
         return None
 
@@ -31,7 +31,9 @@ def add_missing_gnps_planar_inchikey(data: pd.DataFrame) -> pd.DataFrame:
         data[column] = data[column].astype("object")
 
     missing = data[column].isna() | data[column].astype(str).str.strip().str.upper().isin(MISSING_STRUCTURE_VALUES)
-    data.loc[missing, column] = data.loc[missing, "Smiles"].map(_planar_inchikey_from_smiles)
+    data.loc[missing, column] = data.loc[missing, "Smiles"].map(
+        lambda smiles: _planar_inchikey_from_smiles(smiles) or pd.NA
+    )
     return data
 
 
