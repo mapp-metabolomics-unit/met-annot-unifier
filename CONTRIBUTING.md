@@ -124,3 +124,51 @@ Before you submit a pull request, check that it meets these guidelines:
 
 2. If the pull request adds functionality, the docs should be updated.
    Put your new functionality into a function with a docstring, and add the feature to the list in `README.md`.
+
+# Release a New Version
+
+Releases are published from `main`. As of writing, the latest tag is `0.1.0`;
+choose a new, unused version (for example, `0.1.1`). A GitHub release triggers
+`.github/workflows/on-release-main.yml`, which builds and uploads the package
+to PyPI using the `PYPI_TOKEN` GitHub Actions secret. You need push access and
+the GitHub CLI (`gh`) authenticated, or you can publish the release in the
+GitHub web interface instead.
+
+1. After merging the changes to `main`, update your checkout and set the
+   `[project]` version in `pyproject.toml` to the new version (without a `v`
+   prefix). Update the lock file and check the changes:
+
+   ```bash
+   git switch main
+   git pull --ff-only origin main
+   # Edit pyproject.toml: version = "0.1.1"
+   uv lock
+   make check
+   make test
+   ```
+
+2. Commit the version and lock file, then push the commit and its matching
+   tag to GitHub:
+
+   ```bash
+   git add pyproject.toml uv.lock
+   git commit -m "Release 0.1.1"
+   git push origin main
+   git tag 0.1.1
+   git push origin 0.1.1
+   ```
+
+3. Publish the GitHub release for that tag (pushing a tag alone does **not**
+   trigger the PyPI upload):
+
+   ```bash
+   gh release create 0.1.1 --verify-tag --title 0.1.1 --generate-notes
+   ```
+
+   Alternatively, select the existing tag at
+   [New release](https://github.com/mapp-metabolomics-unit/met-annot-unifier/releases/new)
+   and click **Publish release**. Check the
+   [release workflow](https://github.com/mapp-metabolomics-unit/met-annot-unifier/actions/workflows/on-release-main.yml)
+   succeeds, then check that `0.1.1` appears on
+   [PyPI](https://pypi.org/project/met-annot-unifier/). Do not run `make publish`
+   as well: the workflow handles the PyPI upload.
